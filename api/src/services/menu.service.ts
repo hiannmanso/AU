@@ -1,9 +1,8 @@
-// src/services/menu.service.ts
 import { Injectable } from '@nestjs/common';
 import { Menu } from '../interfaces/menu.interface';
-import { MenuRepository } from 'src/repositories/menu.repository';
-import { PatchMenuDto } from 'src/schemas/menu.schema';
-import { throwUnauthorizedException } from 'src/helper/error.helper';
+import { MenuRepository } from '../repositories/menu.repository';
+import { PatchMenuDto } from '../schemas/menu.schema';
+import { throwUnauthorizedException } from '../helper/error.helper';
 
 @Injectable()
 export class MenuService {
@@ -16,7 +15,7 @@ export class MenuService {
   async findById(id: string): Promise<Menu | null> {
     return this.menuRepository.findById(id);
   }
-  async findMenuNow() {
+  async findCurrentMenu() {
     const currentHour = new Date().getHours();
     let menuType: string;
     if (currentHour < 6 || currentHour >= 18) {

@@ -9,8 +9,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { ProductService } from '../services/product.service';
-import { DeleteResultProduct, Product } from 'src/interfaces/product.interface';
-import { CreateProductDto, PatchProductDto } from 'src/schemas/product.schema';
+import { DeleteResultProduct, Product } from '../interfaces/product.interface';
+import { CreateProductDto, PatchProductDto } from '../schemas/product.schema';
 
 @Controller('products')
 export class ProductController {

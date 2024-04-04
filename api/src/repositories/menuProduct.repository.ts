@@ -11,18 +11,11 @@ export class MenuProductRepository {
   }
 
   async createMany(products: MenuProduct[]) {
-    // const { product } = data;
-    console.log(products);
     const createdMenuProducts = prisma.menuProduct.createMany({
       data: products,
     });
     return createdMenuProducts;
   }
-
-  //   async update(id: string, product: Product): Promise<MenuProduct> {
-  //     return prisma.product.update({ where: { id }, data: product });
-  //   }
-
   async deleteByProductId(productId: string): Promise<any> {
     return prisma.menuProduct.deleteMany({ where: { productId } });
   }

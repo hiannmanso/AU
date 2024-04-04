@@ -1,5 +1,3 @@
-// src/category/category.service.ts
-
 import { Injectable } from '@nestjs/common';
 import { Category, CategoryPatch } from '../interfaces/category.interface';
 import { CategoryRepository } from '../repositories/category.repository';
@@ -21,7 +19,7 @@ export class CategoryService {
     const existingCategory = await this.categoryRepository
       .findByName(category.name)
       .catch((error) => {
-        throw new Error(
+        throwUnauthorizedException(
           `An error occurred while finding the category by name: ${error}`,
         );
       });
@@ -33,7 +31,7 @@ export class CategoryService {
     }
 
     return this.categoryRepository.create(category).catch((error) => {
-      throw new Error(
+      throwUnauthorizedException(
         `An error occurred while creating the category: ${error}`,
       );
     });

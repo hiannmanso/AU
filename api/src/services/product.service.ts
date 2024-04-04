@@ -1,4 +1,3 @@
-// import { productSchema } from './../schemas/product.schema';
 import { Injectable } from '@nestjs/common';
 import {
   CreateProductResult,
@@ -7,11 +6,11 @@ import {
   ProductSchemaReq,
 } from '../interfaces/product.interface';
 import { ProductRepository } from '../repositories/product.repository';
-import { MenuProductRepository } from 'src/repositories/menuProduct.repository';
-import { CategoryRepository } from 'src/repositories/category.repository';
-import { throwUnauthorizedException } from 'src/helper/error.helper';
-import { MenuRepository } from 'src/repositories/menu.repository';
-import { PatchProductDto } from 'src/schemas/product.schema';
+import { MenuProductRepository } from '../repositories/menuProduct.repository';
+import { CategoryRepository } from '../repositories/category.repository';
+import { throwUnauthorizedException } from '../helper/error.helper';
+import { MenuRepository } from '../repositories/menu.repository';
+import { PatchProductDto } from '../schemas/product.schema';
 
 @Injectable()
 export class ProductService {

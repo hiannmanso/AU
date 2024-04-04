@@ -1,4 +1,3 @@
-// src/controllers/menu.controller.ts
 import {
   Body,
   Controller,
@@ -11,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { Menu } from '../interfaces/menu.interface';
 import { MenuService } from '../services/menu.service';
-import { CreateMenuDto, PatchMenuDto } from 'src/schemas/menu.schema';
+import { CreateMenuDto, PatchMenuDto } from '../schemas/menu.schema';
 
 @Controller('menus')
 export class MenuController {
@@ -27,9 +26,9 @@ export class MenuController {
     return this.menuService.findById(id);
   }
 
-  @Get('now')
-  async findMenuNow(): Promise<Menu | null> {
-    return this.menuService.findMenuNow();
+  @Get('current')
+  async findCurrentMenu(): Promise<Menu | null> {
+    return this.menuService.findCurrentMenu();
   }
 
   @Post()

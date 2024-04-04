@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './controllers/app.controller';
-import { AppService } from './services/app.service';
 import { CategoryController } from './controllers/category.controller';
 import { CategoryRepository } from './repositories/category.repository';
 import { CategoryService } from './services/category.service';
@@ -14,14 +12,8 @@ import { MenuProductRepository } from './repositories/menuProduct.repository';
 
 @Module({
   imports: [],
-  controllers: [
-    AppController,
-    CategoryController,
-    MenuController,
-    ProductController,
-  ],
+  controllers: [CategoryController, MenuController, ProductController],
   providers: [
-    AppService,
     CategoryRepository,
     CategoryService,
     MenuRepository,
