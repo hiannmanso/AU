@@ -1,0 +1,50 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Product {
+  id          String        @id @default(uuid()) @map("_id")
+  name        String        @unique
+  categoryId  String
+  description String
+  price       Float
+  image       String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  category    Category      @relation(fields: [categoryId], references: [id])
+  MenuProduct MenuProduct[]
+}
+
+model Category {
+  id          String    @id @default(uuid()) @map("_id")
+  name        String    @unique
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Product     Product[]
+}
+
+model Menu {
+  id          String        @id @default(uuid()) @map("_id")
+  name        String        @unique
+  description String
+  type        String        @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  MenuProduct MenuProduct[]
+}
+
+model MenuProduct {
+  id        String   @id @default(uuid()) @map("_id")
+  productId String
+  menuType  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  menu      Menu     @relation(fields: [menuType], references: [type])
+  product   Product  @relation(fields: [productId], references: [id])
+}
