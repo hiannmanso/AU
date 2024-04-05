@@ -4,16 +4,16 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
 });
-
+import { useGlobalContext } from "../../contexts/GlobalContext";
 export default function Header() {
-  const [optionHeader, setOptionHeader] = useState("menu");
+  const { optionHeader, setOptionHeader } = useGlobalContext();
+
   const [options, setOptions] = useState([
     "All",
     "Breakfast",
     "Lunch",
     "Coctails",
     "Dinner",
-    "COISA AQ",
   ]);
   const [optionSelected, setOptionSelected] = useState("All");
   return (

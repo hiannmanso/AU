@@ -1,12 +1,16 @@
-import "@/styles/reset.css";
+// import "@/styles/reset.css";
 import "@/styles/globals.css";
-import type { AppProps } from "next/app";
+import { GlobalProvider } from "@/contexts/GlobalContext";
 
 function MyApp({
   Component,
   pageProps,
 }: Readonly<{ Component: any; pageProps: any }>) {
-  return <Component {...pageProps} />;
+  return (
+    <GlobalProvider>
+      <Component {...pageProps} />
+    </GlobalProvider>
+  );
 }
 
 export default MyApp;
