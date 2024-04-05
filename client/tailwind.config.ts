@@ -8,6 +8,12 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      // boxShadow: {
+      //   bottom: "0px 4px 10px rgba(0, 0, 0, 0.1)", // Ajuste a sombra conforme necessário
+      // },
+      colors: {
+        primary: "#92400E",
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
