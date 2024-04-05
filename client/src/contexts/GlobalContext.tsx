@@ -1,5 +1,5 @@
+import React, { createContext, useState, useContext, ReactNode } from "react";
 import { CardItemInterface } from "@/interfaces/Card.interface";
-import React, { createContext, useState, useContext } from "react";
 
 interface GlobalContextType {
   optionHeader: string;
@@ -16,9 +16,11 @@ export const GlobalContext = createContext<GlobalContextType | undefined>(
   undefined
 );
 
-export const GlobalProvider: React.FC = ({ children }) => {
+export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [optionHeader, setOptionHeader] = useState<string>("menu");
-  const [isOpenModal, setIsOpenModal] = useState<boolean>(true);
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [infosModal, setInfosModal] = useState<CardItemInterface | undefined>(
     undefined
   );
