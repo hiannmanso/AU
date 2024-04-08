@@ -9,14 +9,14 @@ export class CreateCategoryDto {
   @IsNotEmpty()
   description: string;
 }
-export class PatchCategoryDto {
+export class PutCategoryDto {
   @IsString({ message: 'Name must be a string' })
   @ValidateIf((o) => !!o.name)
   @IsNotEmpty({ message: 'Name cannot be empty' })
-  name?: string;
+  name: string;
 
   @IsString({ message: 'Description must be a string' })
   @ValidateIf((o) => !!o.description)
   @IsNotEmpty({ message: 'Description cannot be empty' })
-  description?: string;
+  description: string;
 }

@@ -5,6 +5,7 @@ import { MenuService } from '../services/menu.service';
 import { MenuRepository } from '../repositories/menu.repository';
 import { Menu } from 'src/interfaces/menu.interface';
 import { PatchMenuDto } from 'src/schemas/menu.schema';
+import { UnauthorizedException } from '@nestjs/common';
 
 describe('MenuService', () => {
   let menuController: MenuController;
@@ -83,7 +84,7 @@ describe('MenuService', () => {
 
       jest
         .spyOn(menuRepository, 'findByType')
-        .mockResolvedValueOnce(mockDayMenu);
+        .mockResolvedValueOnce([mockDayMenu]);
 
       const realDateNow = Date.now;
       Date.now = jest.fn(() => mockDate.getTime());
@@ -91,7 +92,7 @@ describe('MenuService', () => {
       const result = await menuService.findCurrentMenu();
 
       expect(result).toBeDefined();
-      expect(result.type).toBe('day');
+      expect(result[0].type).toBe('day');
 
       Date.now = realDateNow;
     });
@@ -108,7 +109,7 @@ describe('MenuService', () => {
 
       jest
         .spyOn(menuRepository, 'findByType')
-        .mockResolvedValueOnce(mockNightMenu);
+        .mockResolvedValueOnce([mockNightMenu]);
 
       const realDateNow = Date.now;
       Date.now = jest.fn(() => mockDate.getTime());
@@ -116,7 +117,7 @@ describe('MenuService', () => {
       const result = await menuService.findCurrentMenu();
 
       expect(result).toBeDefined();
-      expect(result.type).toBe('night');
+      expect(result[0].type).toBe('night');
 
       Date.now = realDateNow;
     });
@@ -139,6 +140,24 @@ describe('MenuService', () => {
       expect(result).toEqual(mockMenu);
       expect(menuRepository.findByName).toHaveBeenCalledWith(mockMenu.name);
       expect(menuRepository.create).toHaveBeenCalledWith(mockMenu);
+    });
+    it('should throw an exception if the menu already exists', async () => {
+      jest.spyOn(menuRepository, 'findByName').mockResolvedValue({
+        id: '1',
+        name: 'Existing Menu',
+        description: 'Description',
+        type: 'day',
+      });
+
+      const newMenu: Menu = {
+        name: 'Existing Menu',
+        description: 'Description',
+        type: 'day',
+      };
+
+      await expect(menuService.create(newMenu)).rejects.toThrowError(
+        UnauthorizedException,
+      );
     });
   });
 

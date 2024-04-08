@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { Product } from '../interfaces/product.interface';
 
 import prisma from '../config/database';
-import { PatchProductDto } from 'src/schemas/product.schema';
+import { PutProductDto } from 'src/schemas/product.schema';
 @Injectable()
 export class ProductRepository {
   constructor() {}
 
   async findAll(): Promise<Product[]> {
-    return prisma.product.findMany({ include: {} });
+    return prisma.product.findMany({ include: { category: {} } });
   }
 
   async findById(id: string): Promise<Product | null> {
@@ -31,7 +31,7 @@ export class ProductRepository {
     return prisma.product.create({ data: product });
   }
 
-  async update(id: string, product: PatchProductDto): Promise<Product> {
+  async update(id: string, product: PutProductDto): Promise<Product> {
     return prisma.product.update({ where: { id }, data: product });
   }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Menu } from '../interfaces/menu.interface';
 import prisma from '../config/database';
-import { PatchMenuDto } from 'src/schemas/menu.schema';
+import { PutMenuDto } from 'src/schemas/menu.schema';
 
 @Injectable()
 export class MenuRepository {
@@ -21,9 +21,13 @@ export class MenuRepository {
       include: { MenuProduct: {} },
     });
   }
-  async findByType(type: string): Promise<Menu | null> {
-    return prisma.menu.findUnique({
-      where: { type },
+  async findByType(type: string): Promise<Menu[] | null> {
+    return prisma.menu.findMany({
+      where: {
+        type: {
+          has: type,
+        },
+      },
       include: { MenuProduct: { include: { product: {} } } },
     });
   }
@@ -31,7 +35,7 @@ export class MenuRepository {
     return prisma.menu.create({ data: menu });
   }
 
-  async update(id: string, menu: PatchMenuDto): Promise<Menu> {
+  async update(id: string, menu: PutMenuDto): Promise<Menu> {
     return prisma.menu.update({ where: { id }, data: menu });
   }
 

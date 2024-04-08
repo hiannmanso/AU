@@ -10,6 +10,8 @@ interface GlobalContextType {
   setInfosModal: React.Dispatch<
     React.SetStateAction<CardItemInterface | undefined>
   >;
+  menuOptions: any;
+  setMenuOptions: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export const GlobalContext = createContext<GlobalContextType | undefined>(
@@ -24,6 +26,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   const [infosModal, setInfosModal] = useState<CardItemInterface | undefined>(
     undefined
   );
+  const [menuOptions, setMenuOptions] = useState("");
 
   return (
     <GlobalContext.Provider
@@ -34,6 +37,8 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
         setIsOpenModal,
         infosModal,
         setInfosModal,
+        menuOptions,
+        setMenuOptions,
       }}
     >
       {children}

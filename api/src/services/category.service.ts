@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Category, CategoryPatch } from '../interfaces/category.interface';
+import { Category } from '../interfaces/category.interface';
 import { CategoryRepository } from '../repositories/category.repository';
 import { throwUnauthorizedException } from '../helper/error.helper';
 
@@ -37,9 +37,9 @@ export class CategoryService {
     });
   }
 
-  async update(id: string, category: CategoryPatch): Promise<Category> {
+  async update(id: string, category: Category): Promise<Category> {
     const existingCategory = await this.categoryRepository.findById(id);
-    console.log(existingCategory);
+
     if (!existingCategory)
       throwUnauthorizedException(
         'This category does not exist. please try other id.',

@@ -1,16 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import {
-  CreateProductResult,
-  DeleteResultProduct,
-  Product,
-  ProductSchemaReq,
-} from '../interfaces/product.interface';
+import { DeleteResultProduct, Product } from '../interfaces/product.interface';
 import { ProductRepository } from '../repositories/product.repository';
 import { MenuProductRepository } from '../repositories/menuProduct.repository';
 import { CategoryRepository } from '../repositories/category.repository';
 import { throwUnauthorizedException } from '../helper/error.helper';
 import { MenuRepository } from '../repositories/menu.repository';
-import { PatchProductDto } from '../schemas/product.schema';
+import { PutProductDto } from '../schemas/product.schema';
 
 @Injectable()
 export class ProductService {
@@ -32,7 +27,8 @@ export class ProductService {
   async findByCategoryId(id: string): Promise<Product[]> {
     return this.productRepository.findByCategoryId(id);
   }
-  async create(productData: ProductSchemaReq): Promise<CreateProductResult> {
+
+  async create(productData: Product): Promise<Product> {
     const existingProduct = await this.productRepository.findByName(
       productData.name,
     );
@@ -47,34 +43,35 @@ export class ProductService {
     if (!existingCategory) {
       throwUnauthorizedException('This category does not exist.');
     }
-    await Promise.all(
-      productData.menuType.map(async (menuType) => {
-        const existingMenuType = await this.menuRepository.findByType(menuType);
-        if (existingMenuType === null) {
-          throwUnauthorizedException('This menu type does not exist.');
-        }
-      }),
-    );
-    const dataProductFromDB = { ...productData };
-    delete dataProductFromDB.menuType;
-    console.log(dataProductFromDB);
-    const createProduct =
-      await this.productRepository.create(dataProductFromDB);
+
+    // await Promise.all(
+    //   productData.menuIds.map(async (id) => {
+    //     const existingMenu = await this.menuRepository.findById(id);
+    //     console.log(existingMenu);
+    //     if (existingMenu === null) {
+    //       throwUnauthorizedException('This menu type does not exist.');
+    //     }
+    //   }),
+    // );
+    // const dataProductFromDB = { ...productData };
+    // delete dataProductFromDB.menuIds;
+
+    const createProduct = await this.productRepository.create(productData);
     if (!createProduct) {
       throwUnauthorizedException(
         'An error occurred while creating the product.',
       );
     }
-    const listMenus = [];
-    productData.menuType.forEach((menu) => {
-      listMenus.push({ menuType: menu, productId: createProduct.id });
-    });
-    const createMenuProduct =
-      await this.menuProductRepository.createMany(listMenus);
-    return { createProduct, createMenuProduct };
+    // const listMenus = [];
+    // productData.menuIds.forEach((menu) => {
+    //   listMenus.push({ menuId: menu, productId: createProduct.id });
+    // });
+    // const createMenuProduct =
+    //   await this.menuProductRepository.createMany(listMenus);
+    return createProduct;
   }
 
-  async update(id: string, productData: PatchProductDto): Promise<Product> {
+  async update(id: string, productData: PutProductDto): Promise<Product> {
     const existingProduct = await this.productRepository.findById(id);
     if (!existingProduct) {
       throwUnauthorizedException(
@@ -85,7 +82,6 @@ export class ProductService {
   }
 
   async delete(id: string): Promise<DeleteResultProduct> {
-    console.log(id);
     const existingProduct = await this.productRepository.findById(id);
     if (!existingProduct) {
       throwUnauthorizedException(

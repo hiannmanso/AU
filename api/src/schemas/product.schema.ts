@@ -1,10 +1,4 @@
-import {
-  IsArray,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  ValidateIf,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, ValidateIf } from 'class-validator';
 
 export class CreateProductDto {
   @IsString()
@@ -27,38 +21,38 @@ export class CreateProductDto {
   @IsNotEmpty()
   image: string;
 
-  @IsArray()
-  @IsNotEmpty()
-  menuType: string[];
+  // @IsArray()
+  // @IsNotEmpty()
+  // menuIds: string[];
 }
-export class PatchProductDto {
+export class PutProductDto {
   @IsString({ message: 'Name must be a string' })
   @ValidateIf((o) => !!o.name)
   @IsNotEmpty({ message: 'Name cannot be empty' })
-  name?: string;
+  name: string;
 
   @IsString({ message: 'Description must be a string' })
   @ValidateIf((o) => !!o.description)
   @IsNotEmpty({ message: 'Description cannot be empty' })
-  description?: string;
+  description: string;
 
   @IsString({ message: 'Image must be a string' })
   @ValidateIf((o) => !!o.image)
   @IsNotEmpty({ message: 'Image cannot be empty' })
-  image?: string;
+  image: string;
 
   @IsNumber()
   @ValidateIf((o) => !!o.price)
   @IsNotEmpty({ message: 'Price cannot be empty' })
-  price?: number;
+  price: number;
 
   @IsString()
   @ValidateIf((o) => !!o.categoryId)
   @IsNotEmpty({ message: 'categoryId cannot be empty' })
-  categoryId?: string;
+  categoryId: string;
 
-  @IsArray()
-  @ValidateIf((o) => !!o.menuType)
-  @IsNotEmpty({ message: 'menuType cannot be empty' })
-  menuType?: string[];
+  // @IsArray()
+  // @ValidateIf((o) => !!o.menuType)
+  // @IsNotEmpty({ message: 'menuIds cannot be empty' })
+  // menuIds?: string[];
 }

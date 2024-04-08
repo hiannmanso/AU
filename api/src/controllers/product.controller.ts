@@ -5,12 +5,12 @@ import {
   Get,
   Param,
   ParseUUIDPipe,
-  Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 import { ProductService } from '../services/product.service';
 import { DeleteResultProduct, Product } from '../interfaces/product.interface';
-import { CreateProductDto, PatchProductDto } from '../schemas/product.schema';
+import { CreateProductDto, PutProductDto } from '../schemas/product.schema';
 
 @Controller('products')
 export class ProductController {
@@ -35,14 +35,14 @@ export class ProductController {
   }
 
   @Post()
-  async create(@Body() productData: CreateProductDto) {
+  async create(@Body() productData: CreateProductDto): Promise<Product> {
     return this.productService.create(productData);
   }
 
-  @Patch(':id')
+  @Put(':id')
   async update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() productData: PatchProductDto,
+    @Body() productData: PutProductDto,
   ): Promise<Product> {
     return this.productService.update(id, productData);
   }

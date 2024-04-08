@@ -19,4 +19,7 @@ export class MenuProductRepository {
   async deleteByProductId(productId: string): Promise<any> {
     return prisma.menuProduct.deleteMany({ where: { productId } });
   }
+  async deleteByMenuId(menuId: string): Promise<any> {
+    return prisma.menuProduct.deleteMany({ where: { menuId } });
+  }
 }

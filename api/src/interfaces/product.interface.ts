@@ -9,7 +9,7 @@ export interface Product {
   updatedAt?: Date;
 }
 export interface ProductSchemaReq extends Product {
-  menuType: string[];
+  menuIds: string[];
 }
 
 export interface CreateProductResult {

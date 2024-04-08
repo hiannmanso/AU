@@ -5,15 +5,12 @@ import {
   Get,
   Param,
   ParseUUIDPipe,
-  Patch,
+  Put,
   Post,
 } from '@nestjs/common';
 import { Category } from '../interfaces/category.interface';
 import { CategoryService } from '../services/category.service';
-import {
-  CreateCategoryDto,
-  PatchCategoryDto,
-} from '../schemas/category.schema';
+import { CreateCategoryDto } from '../schemas/category.schema';
 
 @Controller('categories')
 export class CategoryController {
@@ -35,10 +32,10 @@ export class CategoryController {
   async create(@Body() category: CreateCategoryDto): Promise<Category> {
     return this.categoryService.create(category);
   }
-  @Patch(':id')
+  @Put(':id')
   async update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() category: PatchCategoryDto,
+    @Body() category: CreateCategoryDto,
   ): Promise<Category> {
     return this.categoryService.update(id, category);
   }

@@ -5,12 +5,17 @@ import {
   Get,
   Param,
   ParseUUIDPipe,
-  Patch,
   Post,
+  Put,
 } from '@nestjs/common';
-import { Menu } from '../interfaces/menu.interface';
+import {
+  BodyPutMenuResponse,
+  DeleteMenuBody,
+  Menu,
+  MenuInfo,
+} from '../interfaces/menu.interface';
 import { MenuService } from '../services/menu.service';
-import { CreateMenuDto, PatchMenuDto } from '../schemas/menu.schema';
+import { CreateMenuDto } from '../schemas/menu.schema';
 
 @Controller('menus')
 export class MenuController {
@@ -27,25 +32,27 @@ export class MenuController {
   }
 
   @Get('current')
-  async findCurrentMenu(): Promise<Menu | null> {
+  async findCurrentMenu(): Promise<Menu[] | null> {
     return this.menuService.findCurrentMenu();
   }
 
   @Post()
-  async create(@Body() menu: CreateMenuDto): Promise<Menu> {
+  async create(@Body() menu: CreateMenuDto): Promise<MenuInfo | null> {
     return this.menuService.create(menu);
   }
 
-  @Patch(':id')
+  @Put(':id')
   async update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() menu: PatchMenuDto,
-  ): Promise<Menu> {
+    @Body() menu: CreateMenuDto,
+  ): Promise<BodyPutMenuResponse> {
     return this.menuService.update(id, menu);
   }
 
   @Delete(':id')
-  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<Menu> {
+  async delete(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<DeleteMenuBody> {
     return this.menuService.delete(id);
   }
 }

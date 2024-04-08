@@ -146,7 +146,7 @@ describe('ProductService', () => {
         description: 'Description 1',
         price: 10,
         image: 'image1.jpg',
-        menuType: ['lunch', 'dinner'],
+        menuIds: ['1', '2'], // Agora menuIds recebe IDs
       };
 
       jest.spyOn(productRepository, 'findByName').mockResolvedValue(null);
@@ -155,45 +155,89 @@ describe('ProductService', () => {
         name: 'Category Name',
         description: 'description',
       });
-
-      jest.spyOn(menuRepository, 'findByType').mockResolvedValue({
+      jest.spyOn(menuRepository, 'findById').mockResolvedValue({
         id: '1',
         name: 'Menu Name',
         description: 'description',
         type: 'typed',
       });
-
-      jest.spyOn(productRepository, 'create').mockResolvedValue({
-        id: '1',
-        ...productData,
-      });
-
-      const menuProductData: MenuProduct[] = [
-        { productId: '1', menuType: 'lunch' },
-        { productId: '1', menuType: 'dinner' },
-      ];
-
+      jest
+        .spyOn(productRepository, 'create')
+        .mockResolvedValue({ id: '1', ...productData });
       jest
         .spyOn(menuProductRepository, 'createMany')
-        .mockResolvedValue({ count: menuProductData.length });
+        .mockResolvedValue({ count: 2 });
 
       const result = await productService.create(productData);
 
-      const createMenuProduct = menuProductData.map((menuProduct, index) => ({
-        id: (index + 1).toString(),
-        menuType: menuProduct.menuType,
-        productId: '1',
-      }));
-
-      expect(result).toEqual({
-        createProduct: {
-          id: '1',
-          ...productData,
-        },
-        createMenuProduct: {
-          count: menuProductData.length,
-        },
+      expect(result.createProduct).toEqual({ id: '1', ...productData });
+      expect(result.createMenuProduct.count).toBe(2);
+    });
+    it('should throw an exception if the product already exists', async () => {
+      jest.spyOn(productRepository, 'findByName').mockResolvedValue({
+        id: '1',
+        name: 'Product 1',
+        categoryId: '1',
+        description: 'Description 1',
+        price: 10,
+        image: 'image1.jpg',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
+
+      const productData = {
+        name: 'Product 1',
+        categoryId: '1',
+        description: 'Description 1',
+        price: 10,
+        image: 'image1.jpg',
+        menuIds: ['1', 'dinner'],
+      };
+
+      await expect(productService.create(productData)).rejects.toThrowError(
+        UnauthorizedException,
+      );
+    });
+
+    it('should throw an exception if the category does not exist', async () => {
+      jest.spyOn(productRepository, 'findByName').mockResolvedValue(null);
+      jest.spyOn(categoryRepository, 'findById').mockResolvedValue(null);
+
+      const productData = {
+        name: 'Product 1',
+        categoryId: '1',
+        description: 'Description 1',
+        price: 10,
+        image: 'image1.jpg',
+        menuIds: ['1', 'dinner'],
+      };
+
+      await expect(productService.create(productData)).rejects.toThrowError(
+        UnauthorizedException,
+      );
+    });
+
+    it('should throw an exception if any of the menu types do not exist', async () => {
+      jest.spyOn(productRepository, 'findByName').mockResolvedValue(null);
+      jest.spyOn(categoryRepository, 'findById').mockResolvedValue({
+        id: '1',
+        name: 'Category Name',
+        description: 'description',
+      });
+      jest.spyOn(menuRepository, 'findById').mockResolvedValue(null);
+
+      const productData = {
+        name: 'Product 1',
+        categoryId: '1',
+        description: 'Description 1',
+        price: 10,
+        image: 'image1.jpg',
+        menuIds: ['1', 'dinner'],
+      };
+
+      await expect(productService.create(productData)).rejects.toThrowError(
+        UnauthorizedException,
+      );
     });
   });
 
