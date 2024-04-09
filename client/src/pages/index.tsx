@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { ProductEntry } from "@/interfaces/Product.interface";
 import { Inter } from "next/font/google";
+import DATABASE_URL from "@/api/api";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -44,7 +45,7 @@ export default function Home() {
 
   async function getCurrentMenus() {
     try {
-      const response = await axios.get(`http://localhost:3000/menus/current`);
+      const response = await axios.get(`${DATABASE_URL}/menus/current`);
       const firstCategoryProducts = response.data[0]?.MenuProduct || [];
       setMenuOptions(response.data);
       setListedProducts(firstCategoryProducts);

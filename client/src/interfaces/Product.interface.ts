@@ -28,3 +28,11 @@ export interface ProductEntry {
 interface ProductWithCategory extends Product {
   category: Category;
 }
+export interface ProductInputs {
+  id?: string;
+  name: string;
+  description: string;
+  category: string;
+  price: number;
+  image: string;
+}

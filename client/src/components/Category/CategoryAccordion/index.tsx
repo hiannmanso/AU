@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 
 import { Category } from "@/interfaces/Category.interface";
 import { Product } from "@/interfaces/Product.interface";
-import { CategoryInputs, MenuInputs } from "@/interfaces/Menu.interface";
+import { CategoryInputs } from "@/interfaces/Category.interface";
 import Carousel from "@/components/Carousel";
 import CategoryForm from "../CategoryForm";
 const inter = Inter({
@@ -35,7 +35,6 @@ function CategoryAccordion({
   const [selectedProductCategoryData, setSelectedProductCategoryData] =
     useState<string[]>([]);
   function toggleAccordion() {
-    console.log(categoriesData);
     setActiveAccordion((prev) => (prev === "category" ? null : "category"));
   }
 

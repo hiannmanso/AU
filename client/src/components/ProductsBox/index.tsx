@@ -7,12 +7,13 @@ function ProductsBox({
   setSelectedProductMenuData,
   disable,
 }: ProductsBoxProps) {
-  const isProductSelected = (productId: string): boolean =>
-    selectedProductMenuData.includes(productId);
+  function isProductSelected(productId: string): boolean {
+    return selectedProductMenuData.includes(productId);
+  }
 
-  const toggleProductSelection = (productId: string): void => {
+  function toggleProductSelection(productId: string): void {
     if (disable) {
-      return; // Se disable for true, não faça nada
+      return;
     }
 
     setSelectedProductMenuData((prevSelectedProductIds) => {
@@ -22,7 +23,7 @@ function ProductsBox({
         return [...prevSelectedProductIds, productId];
       }
     });
-  };
+  }
 
   return (
     <div className="px-4 pt-4">
@@ -34,7 +35,7 @@ function ProductsBox({
               isProductSelected(product.id) ? "bg-blue-100" : "bg-white"
             }`}
             onClick={() => toggleProductSelection(product.id)}
-            style={{ pointerEvents: disable ? "none" : "auto" }} // Desabilita os eventos de clique se disable for true
+            style={{ pointerEvents: disable ? "none" : "auto" }}
           >
             <h3 className="text-lg font-semibold">{product.name}</h3>
             <p className="text-gray-600">{product.description}</p>

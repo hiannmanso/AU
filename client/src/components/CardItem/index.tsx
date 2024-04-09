@@ -3,11 +3,7 @@ import { CardItemInterface } from "../../interfaces/Card.interface";
 import { useGlobalContext } from "../../contexts/GlobalContext";
 export default function CardItem({ data }: { data: CardItemInterface }) {
   const { isOpenModal, setIsOpenModal, setInfosModal } = useGlobalContext();
-  const generateAltText = () => {
-    return data.titleProduct
-      ? `Image of ${data.titleProduct}`
-      : "No image available";
-  };
+
   return (
     <div
       className="w-[250px] sm:w-[300px] h-[400px] shadow-md bg-white box-border hover:cursor-pointer md:hover:scale-x-110"

@@ -6,6 +6,7 @@ import { MenuCarouselProps } from "../../interfaces/Menu.interface";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { IoIosCloseCircleOutline } from "react-icons/io";
+import DATABASE_URL from "@/api/api";
 function Carousel({
   data,
   setSelectedItemData,
@@ -27,7 +28,7 @@ function Carousel({
 
     if (confirmDelete) {
       axios
-        .delete(`http://localhost:3000/${type}/${id}`)
+        .delete(`${DATABASE_URL}/${type}/${id}`)
         .then(function (response) {
           console.log("Item deleted successfully:", response);
           setUpdateListData(!updateListData);
@@ -43,7 +44,6 @@ function Carousel({
   }
 
   function editItemData(item: any) {
-    console.log("DATAA", inputData, item);
     if (type == "menus") {
       const itemDetails = {
         name: item.name,
@@ -58,7 +58,6 @@ function Carousel({
           : []
       );
     } else if (type == "categories") {
-      console.log("AQUI ENTROU", item);
       const itemDetails = {
         name: item.name,
         description: item.description,
@@ -82,7 +81,6 @@ function Carousel({
     }
 
     if (currentItem === item.id) {
-      // Se o mesmo item for clicado novamente, desmarca
       setCurrentItem(null);
       setIsNewItem(true);
       setInputsData({
@@ -92,7 +90,6 @@ function Carousel({
       });
       setSelectedItemData([]);
     } else {
-      // Se for um novo item clicado, marca o item
       setCurrentItem(item.id);
       setIsNewItem(false);
     }

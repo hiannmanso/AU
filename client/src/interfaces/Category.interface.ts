@@ -8,3 +8,8 @@ export interface Category {
   updatedAt: string;
   products: Product[];
 }
+export interface CategoryInputs {
+  id?: string;
+  name: string;
+  description: string;
+}

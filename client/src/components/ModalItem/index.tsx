@@ -10,8 +10,7 @@ const inter = Inter({
   display: "swap",
 });
 export default function ModalItem() {
-  const { infosModal, setInfosModal, isOpenModal, setIsOpenModal } =
-    useGlobalContext();
+  const { isOpenModal, setIsOpenModal } = useGlobalContext();
 
   return (
     <>

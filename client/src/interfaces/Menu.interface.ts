@@ -46,17 +46,3 @@ export interface MenuInputs {
   description: string;
   type: string[];
 }
-
-export interface CategoryInputs {
-  id?: string;
-  name: string;
-  description: string;
-}
-export interface ProductInputs {
-  id?: string;
-  name: string;
-  description: string;
-  category: string;
-  price: number;
-  image: string;
-}

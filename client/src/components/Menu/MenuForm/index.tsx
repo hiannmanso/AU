@@ -6,6 +6,7 @@ import { MenuInputs } from "@/interfaces/Menu.interface";
 import { Product } from "@/interfaces/Product.interface";
 import Form from "@/components/Form";
 import { toast } from "react-toastify";
+import DATABASE_URL from "@/api/api";
 
 interface MenuFormProps {
   productsData: Product[];
@@ -34,7 +35,7 @@ function MenuForm({
 }: MenuFormProps) {
   function createNewMenu() {
     axios
-      .post("http://localhost:3000/menus", {
+      .post(`${DATABASE_URL}/menus`, {
         ...menuInputsData,
         productsId: selectedProductMenuData,
       })
@@ -53,7 +54,7 @@ function MenuForm({
   }
   function editMenu() {
     axios
-      .put(`http://localhost:3000/menus/${menuInputsData.id}`, {
+      .put(`${DATABASE_URL}/menus/${menuInputsData.id}`, {
         name: menuInputsData.name,
         description: menuInputsData.description,
         type: menuInputsData.type,

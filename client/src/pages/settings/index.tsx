@@ -8,7 +8,7 @@ import { MenuDetails } from "@/interfaces/Menu.interface";
 import { Product } from "@/interfaces/Product.interface";
 import { Category } from "@/interfaces/Category.interface";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import { toast } from "react-toastify";
+import DATABASE_URL from "@/api/api";
 export default function Settings() {
   const { setOptionHeader } = useGlobalContext();
   const [menusData, setMenusData] = useState<MenuDetails[]>([]);
@@ -23,6 +23,7 @@ export default function Settings() {
 
   setOptionHeader("settings");
   useEffect(() => {
+    console.log(process.env.DATABASE_URL_TESTE);
     loaderData("menus", setMenusData);
   }, [updateMenuData]);
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function Settings() {
   ) {
     axios({
       method: "get",
-      url: `http://localhost:3000/${endpoint}`,
+      url: `${DATABASE_URL}/${endpoint}`,
     })
       .then((response) => {
         console.log(endpoint, response.data);

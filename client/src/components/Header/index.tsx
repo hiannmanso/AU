@@ -29,8 +29,6 @@ export default function Header() {
           }
           onClick={() => {
             setOptionHeader("menu");
-            // setOptions(["All", "Breakfast", "Lunch", "Coctails", "Dinner"]);
-            setOptionSelected("All");
             router.push("/");
           }}
         >
@@ -65,7 +63,6 @@ export default function Header() {
       <div className="flex flex-row gap-0 sm:gap-4 text-sm text-primary font-bold ">
         {menuOptions && optionHeader == "menu" ? (
           menuOptions.map((option: OptionHeader, index: number) => {
-            // console.log(option);
             return (
               <div
                 key={index}
@@ -76,7 +73,7 @@ export default function Header() {
                 }
                 onClick={() => {
                   setOptionSelected(option.name);
-                  console.log("AQUI", option.MenuProduct);
+
                   setListedProducts(option.MenuProduct);
                 }}
               >

@@ -1,10 +1,11 @@
 import axios from "axios";
 
 import ProductsBox from "@/components/ProductsBox";
-import { CategoryInputs } from "@/interfaces/Menu.interface";
+import { CategoryInputs } from "@/interfaces/Category.interface";
 import { Product } from "@/interfaces/Product.interface";
 import Form from "@/components/Form";
 import { toast } from "react-toastify";
+import DATABASE_URL from "@/api/api";
 
 interface CategoryFormProps {
   productsData: Product[];
@@ -33,7 +34,7 @@ function CategoryForm({
 }: CategoryFormProps) {
   function createNewCategory() {
     axios
-      .post("http://localhost:3000/categories", {
+      .post(`${DATABASE_URL}/categories`, {
         ...categoryInputsData,
       })
       .then((response) => {
@@ -50,7 +51,7 @@ function CategoryForm({
   }
   function editCategory() {
     axios
-      .put(`http://localhost:3000/categories/${categoryInputsData.id}`, {
+      .put(`${DATABASE_URL}/categories/${categoryInputsData.id}`, {
         name: categoryInputsData.name,
         description: categoryInputsData.description,
       })

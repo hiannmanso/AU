@@ -5,7 +5,7 @@ interface FormProps<T extends Record<string, any>> {
   setFormData: React.Dispatch<React.SetStateAction<T>>;
   formFields: {
     [key: string]: {
-      type: "text" | "select" | "number"; // Adicionamos "number" como tipo permitido
+      type: "text" | "select" | "number";
       options?: { name: string; id: string }[];
       placeholder?: string;
     };
@@ -19,37 +19,35 @@ function Form<T extends Record<string, any>>({
   formFields,
   multiplies,
 }: FormProps<T>) {
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+  function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
-    // Verificar o tipo do campo e converter para número se necessário
+
     const parsedValue =
       formFields[name]?.type === "number" ? parseFloat(value) : value;
     setFormData((prevData) => ({
       ...prevData,
       [name]: parsedValue,
     }));
-  };
+  }
 
-  const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
+  function handleSelectChange(e: ChangeEvent<HTMLSelectElement>) {
     const { name, options } = e.target;
     const selectedOptions = Array.from(options)
       .filter((option) => option.selected)
       .map((option) => option.value);
 
     if (multiplies) {
-      // Se multiplies for true, salva em um array
       setFormData((prevData) => ({
         ...prevData,
         [name]: selectedOptions,
       }));
     } else {
-      // Se multiplies for false, salva apenas o primeiro valor selecionado
       setFormData((prevData) => ({
         ...prevData,
-        [name]: selectedOptions[0] || "", // Seleciona o primeiro valor ou uma string vazia se não houver seleção
+        [name]: selectedOptions[0] || "",
       }));
     }
-  };
+  }
 
   return (
     <div className="bg-white flex flex-col">
@@ -83,7 +81,7 @@ function Form<T extends Record<string, any>>({
               >
                 {fieldConfig.options.map((option) => (
                   <option key={option.id} value={option.id}>
-                    {option.name} {/* Mostra o nome da opção */}
+                    {option.name}
                   </option>
                 ))}
               </select>

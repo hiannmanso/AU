@@ -5,7 +5,7 @@
 /.pnp
 .pnp.js
 .yarn/install-state.gz
-
+/ChatGPT_files
 # testing
 /coverage
 
