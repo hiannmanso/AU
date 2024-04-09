@@ -6,7 +6,7 @@ export default function CardItem({ data }: { data: CardItemInterface }) {
 
   return (
     <div
-      className="w-[250px] sm:w-[300px] h-[400px] shadow-md bg-white box-border hover:cursor-pointer md:hover:scale-x-110"
+      className="w-[250px] sm:w-[300px] h-[400px] shadow-md bg-white box-border hover:cursor-pointer"
       onClick={() => {
         setIsOpenModal(!isOpenModal);
         setInfosModal(data);
@@ -26,8 +26,8 @@ export default function CardItem({ data }: { data: CardItemInterface }) {
         />
       </div>
       <div className="p-5">
-        <h1 className="font-bold">{data.titleProduct}</h1>
-        <h2 className="text-sm overflow-hidden my-2">{data.description}</h2>
+        <h1 className="font-bold h-5 overflow-hidden">{data.titleProduct}</h1>
+        <h2 className="text-sm h-5 overflow-hidden my-2">{data.description}</h2>
         <p className="text-primary flex justify-end mt-10">${data.price}</p>
       </div>
     </div>

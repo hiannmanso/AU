@@ -31,14 +31,14 @@ function ProductsBox({
         {productsData.map((product: Product) => (
           <div
             key={product.id}
-            className={`border overflow-hidden p-3 rounded-md cursor-pointer ${
+            className={`border overflow-hidden w-[150px] h-[100px] p-4 text-center rounded-md cursor-pointer  ${
               isProductSelected(product.id) ? "bg-blue-100" : "bg-white"
             }`}
             onClick={() => toggleProductSelection(product.id)}
             style={{ pointerEvents: disable ? "none" : "auto" }}
           >
             <h3 className="text-lg font-semibold">{product.name}</h3>
-            <p className="text-gray-600">{product.description}</p>
+            {/* <p className="text-gray-600">{product.description}</p> */}
           </div>
         ))}
       </div>
