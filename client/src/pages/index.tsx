@@ -14,23 +14,10 @@ const inter = Inter({
   display: "swap",
 });
 
-function groupProductsByCategory(products: any) {
-  const groupedProducts: Record<string, ProductEntry[]> = {};
-
-  products.forEach((product: ProductEntry) => {
-    const categoryName = product.product.category.name;
-
-    if (!groupedProducts[categoryName]) {
-      groupedProducts[categoryName] = [];
-    }
-
-    groupedProducts[categoryName].push(product);
-  });
-
-  return groupedProducts;
-}
-
 export default function Home() {
+  const [groupedProducts, setGroupedProducts] = useState<
+    Record<string, ProductEntry[]>
+  >({});
   const {
     setMenuOptions,
     setOptionHeader,
@@ -39,15 +26,26 @@ export default function Home() {
     setListedProducts,
   } = useGlobalContext();
 
-  const [groupedProducts, setGroupedProducts] = useState<
-    Record<string, ProductEntry[]>
-  >({});
-
   useEffect(() => {
     setOptionHeader("menu");
     getCurrentMenus();
   }, []);
 
+  function groupProductsByCategory(products: any) {
+    const groupedProducts: Record<string, ProductEntry[]> = {};
+
+    products.forEach((product: ProductEntry) => {
+      const categoryName = product.product.category.name;
+
+      if (!groupedProducts[categoryName]) {
+        groupedProducts[categoryName] = [];
+      }
+
+      groupedProducts[categoryName].push(product);
+    });
+
+    return groupedProducts;
+  }
   async function getCurrentMenus() {
     try {
       const response = await axios.get(`${DATABASE_URL}/menus/current`);
@@ -64,38 +62,37 @@ export default function Home() {
     setGroupedProducts(groupProductsByCategory(listedProducts));
   }, [listedProducts]);
 
-  console.log(groupedProducts);
+  console.log(listedProducts);
   return (
     <>
       <ModalItem />
       <div className="m-auto w-4/5 py-14 px-10">
-        {groupedProducts ? (
-          Object.entries(groupedProducts).map(([categoryName, products]) => (
-            <div key={categoryName} className="mb-8">
-              <h1 className={`text-2xl font-bold mb-4 ${inter.className}`}>
-                {categoryName}
-              </h1>
-              <div className="flex flex-row justify-start flex-wrap gap-5">
-                {products.map((product: ProductEntry, index: number) => (
-                  <CardItem
-                    key={index}
-                    data={{
-                      titleProduct: product.product.name,
-                      description: product.product.description,
-                      image: product.product.image,
-                      price: product.product.price,
-                      category: product.product.category.name,
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          ))
-        ) : (
+        {listedProducts.length > 0 ? undefined : (
           <div className="flex justify-center items-center">
             <Loader height={200} width={200} />
           </div>
         )}
+        {Object.entries(groupedProducts).map(([categoryName, products]) => (
+          <div key={categoryName} className="mb-8">
+            <h1 className={`text-2xl font-bold mb-4 ${inter.className}`}>
+              {categoryName}
+            </h1>
+            <div className="flex flex-row justify-start flex-wrap gap-5">
+              {products.map((product: ProductEntry, index: number) => (
+                <CardItem
+                  key={index}
+                  data={{
+                    titleProduct: product.product.name,
+                    description: product.product.description,
+                    image: product.product.image,
+                    price: product.product.price,
+                    category: product.product.category.name,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </>
   );
