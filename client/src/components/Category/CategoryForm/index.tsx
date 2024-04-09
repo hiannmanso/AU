@@ -6,6 +6,9 @@ import { Product } from "@/interfaces/Product.interface";
 import Form from "@/components/Form";
 import { toast } from "react-toastify";
 import DATABASE_URL from "@/api/api";
+import { useState } from "react";
+import Loader from "@/components/Loader";
+import checkObjectNotEmpty from "@/utils/chckObjectNotEmpty";
 
 interface CategoryFormProps {
   productsData: Product[];
@@ -32,7 +35,13 @@ function CategoryForm({
   setUpdateListData,
   setCurrentItem,
 }: CategoryFormProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   function createNewCategory() {
+    if (checkObjectNotEmpty(categoryInputsData) == false) {
+      toast.error("all fields must be filled in");
+      setIsLoading(false);
+      return;
+    }
     axios
       .post(`${DATABASE_URL}/categories`, {
         ...categoryInputsData,
@@ -42,14 +51,20 @@ function CategoryForm({
         setCategoryInputsData({ name: "", description: "" });
         setSelectedProductCategoryData([]);
         setUpdateListData(!updateListData);
+        setIsLoading(false);
         toast.success("Category created successfully!");
       })
       .catch((err) => {
         console.log(err);
+        setIsLoading(false);
         toast.error(err.message);
       });
   }
   function editCategory() {
+    if (checkObjectNotEmpty(categoryInputsData) == false) {
+      toast.error("all fields must be filled in");
+      return;
+    }
     axios
       .put(`${DATABASE_URL}/categories/${categoryInputsData.id}`, {
         name: categoryInputsData.name,
@@ -61,10 +76,12 @@ function CategoryForm({
         setSelectedProductCategoryData([]);
         setUpdateListData(!updateListData);
         setCurrentItem(null);
+        setIsLoading(false);
         toast.success("Category updated successfully!");
       })
       .catch((err) => {
         console.log(err);
+        setIsLoading(false);
         toast.error(err.message);
       });
   }
@@ -101,16 +118,30 @@ function CategoryForm({
           {isnewCategory ? (
             <button
               className="bg-primary px-2 py-1 text-white rounded-md shadow-md"
-              onClick={createNewCategory}
+              onClick={() => {
+                setIsLoading(true);
+                createNewCategory();
+              }}
             >
-              CREATE NEW CATEGORY
+              {isLoading ? (
+                <Loader width={50} height={50} />
+              ) : (
+                <p>CREATE NEW CATEGORY</p>
+              )}
             </button>
           ) : (
             <button
               className="bg-primary px-2 py-1 text-white rounded-md shadow-md"
-              onClick={editCategory}
+              onClick={() => {
+                setIsLoading(true);
+                editCategory();
+              }}
             >
-              EDIT CATEGORY
+              {isLoading ? (
+                <Loader width={50} height={50} />
+              ) : (
+                <p>EDIT CATEGORY</p>
+              )}
             </button>
           )}
         </div>

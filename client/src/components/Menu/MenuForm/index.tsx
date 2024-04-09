@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import axios from "axios";
 
 import ProductsBox from "@/components/ProductsBox";
@@ -7,6 +7,8 @@ import { Product } from "@/interfaces/Product.interface";
 import Form from "@/components/Form";
 import { toast } from "react-toastify";
 import DATABASE_URL from "@/api/api";
+import Loader from "@/components/Loader";
+import checkObjectNotEmpty from "@/utils/chckObjectNotEmpty";
 
 interface MenuFormProps {
   productsData: Product[];
@@ -33,7 +35,13 @@ function MenuForm({
   setUpdateListData,
   setCurrentItem,
 }: MenuFormProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   function createNewMenu() {
+    if (checkObjectNotEmpty(menuInputsData) == false) {
+      toast.error("all fields must be filled in");
+      setIsLoading(false);
+      return;
+    }
     axios
       .post(`${DATABASE_URL}/menus`, {
         ...menuInputsData,
@@ -45,14 +53,21 @@ function MenuForm({
         setSelectedProductMenuData([]);
         setUpdateListData(!updateListData);
         setIsNewItem(true);
+        setIsLoading(false);
         toast.success("Menu created successfully!");
       })
       .catch((err) => {
         console.log(err);
         toast.error(err.message);
+        setIsLoading(false);
       });
   }
   function editMenu() {
+    if (checkObjectNotEmpty(menuInputsData) == false) {
+      toast.error("all fields must be filled in");
+      setIsLoading(false);
+      return;
+    }
     axios
       .put(`${DATABASE_URL}/menus/${menuInputsData.id}`, {
         name: menuInputsData.name,
@@ -67,11 +82,12 @@ function MenuForm({
         setUpdateListData(!updateListData);
         setIsNewItem(true);
         setCurrentItem(null);
+        setIsLoading(false);
         toast.success("Menu updated successfully!");
       })
       .catch((err) => {
         console.log(err);
-
+        setIsLoading(false);
         toast.error(err.message);
       });
   }
@@ -114,16 +130,26 @@ function MenuForm({
           {isnewMenu ? (
             <button
               className="bg-primary px-2 py-1 text-white rounded-md shadow-md"
-              onClick={createNewMenu}
+              onClick={() => {
+                setIsLoading(true);
+                createNewMenu();
+              }}
             >
-              CREATE NEW MENU
+              {isLoading ? (
+                <Loader width={50} height={50} />
+              ) : (
+                <p>CREATE NEW MENU</p>
+              )}
             </button>
           ) : (
             <button
               className="bg-primary px-2 py-1 text-white rounded-md shadow-md"
-              onClick={editMenu}
+              onClick={() => {
+                setIsLoading(true);
+                editMenu();
+              }}
             >
-              EDIT MENU
+              {isLoading ? <Loader width={50} height={50} /> : <p>EDIT MENU</p>}
             </button>
           )}
         </div>

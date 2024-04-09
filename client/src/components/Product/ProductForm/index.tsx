@@ -6,6 +6,9 @@ import { Category } from "@/interfaces/Category.interface";
 import { toast } from "react-toastify";
 import CardItem from "@/components/CardItem";
 import DATABASE_URL from "@/api/api";
+import { useState } from "react";
+import Loader from "@/components/Loader";
+import checkObjectNotEmpty from "@/utils/chckObjectNotEmpty";
 
 interface ProductFormProps {
   productsData: Product[];
@@ -32,29 +35,13 @@ function ProductForm({
   setUpdateListData,
   setCurrentItem,
 }: ProductFormProps) {
-  function checkObjectNotEmpty(obj: Record<string, any>): boolean {
-    // Percorre todas as chaves do objeto
-    for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        const value = obj[key];
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-        // Verifica se o valor é vazio
-        if (
-          value === null || // Verifica se é nulo
-          value === undefined || // Verifica se é indefinido
-          (typeof value === "string" && value.trim() === "") || // Verifica se é uma string vazia
-          (Array.isArray(value) && value.length === 0) // Verifica se é um array vazio
-        ) {
-          return false; // Retorna false se encontrar um valor vazio
-        }
-      }
-    }
-
-    return true; // Retorna true se nenhum valor vazio for encontrado
-  }
   function createNewProduct() {
     if (checkObjectNotEmpty(productInputsData) == false) {
       toast.error("all fields must be filled in");
+      setIsLoading(false);
+      return;
     }
     axios
       .post(`${DATABASE_URL}/products`, {
@@ -75,14 +62,21 @@ function ProductForm({
         });
         setSelectedProductData([]);
         setUpdateListData(!updateListData);
+        setIsLoading(false);
         toast.success("Product created successfully!");
       })
       .catch((err) => {
         console.log(err);
+        setIsLoading(false);
         toast.error(err.message);
       });
   }
   function editProduct() {
+    if (checkObjectNotEmpty(productInputsData) == false) {
+      toast.error("all fields must be filled in");
+      setIsLoading(false);
+      return;
+    }
     axios
       .put(`${DATABASE_URL}/products/${productInputsData.id}`, {
         name: productInputsData.name,
@@ -103,10 +97,12 @@ function ProductForm({
         setSelectedProductData([]);
         setUpdateListData(!updateListData);
         setCurrentItem(null);
+        setIsLoading(false);
         toast.success("Product updated successfully!");
       })
       .catch((err) => {
         console.log(err);
+        setIsLoading(false);
         toast.error(err.message);
       });
   }
@@ -158,19 +154,29 @@ function ProductForm({
             <button
               className="bg-primary px-2 py-1 text-white rounded-md shadow-md"
               onClick={() => {
-                console.log(productInputsData);
-
+                setIsLoading(true);
                 createNewProduct();
               }}
             >
-              CREATE NEW PRODUCT
+              {isLoading ? (
+                <Loader width={50} height={50} />
+              ) : (
+                <p>CREATE NEW PRODUCT</p>
+              )}
             </button>
           ) : (
             <button
               className="bg-primary px-2 py-1 text-white rounded-md shadow-md"
-              onClick={editProduct}
+              onClick={() => {
+                setIsLoading(true);
+                editProduct();
+              }}
             >
-              EDIT PRODUCT
+              {isLoading ? (
+                <Loader width={50} height={50} />
+              ) : (
+                <p>EDIT PRODUCT</p>
+              )}
             </button>
           )}
         </div>

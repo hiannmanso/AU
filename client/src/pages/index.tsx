@@ -2,11 +2,12 @@ import CardItem from "@/components/CardItem";
 
 import ModalItem from "@/components/ModalItem";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { ProductEntry } from "@/interfaces/Product.interface";
 import { Inter } from "next/font/google";
 import DATABASE_URL from "@/api/api";
+import Loader from "@/components/Loader";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,6 +39,10 @@ export default function Home() {
     setListedProducts,
   } = useGlobalContext();
 
+  const [groupedProducts, setGroupedProducts] = useState<
+    Record<string, ProductEntry[]>
+  >({});
+
   useEffect(() => {
     setOptionHeader("menu");
     getCurrentMenus();
@@ -55,33 +60,43 @@ export default function Home() {
     }
   }
 
-  const groupedProducts = groupProductsByCategory(listedProducts);
+  useEffect(() => {
+    setGroupedProducts(groupProductsByCategory(listedProducts));
+  }, [listedProducts]);
 
+  console.log(groupedProducts);
   return (
     <>
       <ModalItem />
       <div className="m-auto w-4/5 py-14 px-10">
-        {Object.entries(groupedProducts).map(([categoryName, products]) => (
-          <div key={categoryName} className="mb-8">
-            <h1 className={`text-2xl font-bold mb-4 ${inter.className}`}>
-              {categoryName}
-            </h1>
-            <div className="flex flex-row justify-start flex-wrap gap-5">
-              {products.map((product: ProductEntry, index: number) => (
-                <CardItem
-                  key={index}
-                  data={{
-                    titleProduct: product.product.name,
-                    description: product.product.description,
-                    image: product.product.image,
-                    price: product.product.price,
-                    category: product.product.category.name,
-                  }}
-                />
-              ))}
+        {groupedProducts ? (
+          Object.entries(groupedProducts).map(([categoryName, products]) => (
+            <div key={categoryName} className="mb-8">
+              <h1 className={`text-2xl font-bold mb-4 ${inter.className}`}>
+                {categoryName}
+              </h1>
+              <div className="flex flex-row justify-start flex-wrap gap-5">
+                {products.map((product: ProductEntry, index: number) => (
+                  <CardItem
+                    key={index}
+                    data={{
+                      titleProduct: product.product.name,
+                      description: product.product.description,
+                      image: product.product.image,
+                      price: product.product.price,
+                      category: product.product.category.name,
+                    }}
+                  />
+                ))}
+              </div>
             </div>
+          ))
+        ) : (
+          <div className="flex justify-center items-center">
+            <Loader height={200} width={200} />
           </div>
-        ))}
+        )}
+        <Loader height={200} width={200} />
       </div>
     </>
   );
