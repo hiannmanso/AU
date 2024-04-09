@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Inter } from "next/font/google";
 import { Product } from "@/interfaces/Product.interface";
-import { ProductInputs } from "@/interfaces/Menu.interface";
+import { ProductInputs } from "@/interfaces/Product.interface";
 import Carousel from "@/components/Carousel";
 import ProductForm from "../ProductForm";
 import { Category } from "@/interfaces/Category.interface";
