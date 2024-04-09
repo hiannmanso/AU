@@ -96,7 +96,6 @@ export default function Home() {
             <Loader height={200} width={200} />
           </div>
         )}
-        <Loader height={200} width={200} />
       </div>
     </>
   );
