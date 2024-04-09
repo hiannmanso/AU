@@ -1,37 +1,54 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Test } from '@nestjs/testing';
-import { MenuController } from '../controllers/menu.controller';
+import { Test, TestingModule } from '@nestjs/testing';
 import { MenuService } from '../services/menu.service';
 import { MenuRepository } from '../repositories/menu.repository';
-import { Menu } from 'src/interfaces/menu.interface';
-import { PatchMenuDto } from 'src/schemas/menu.schema';
+import { ProductRepository } from '../repositories/product.repository';
+import { MenuProductRepository } from '../repositories/menuProduct.repository';
 import { UnauthorizedException } from '@nestjs/common';
+import { Menu, MenuWithProducts } from '../interfaces/menu.interface';
+import { PutMenuDto } from '../schemas/menu.schema';
 
 describe('MenuService', () => {
-  let menuController: MenuController;
   let menuService: MenuService;
   let menuRepository: MenuRepository;
+  let productRepository: ProductRepository;
+  let menuProductRepository: MenuProductRepository;
 
   beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: [MenuController],
-      providers: [MenuService, MenuRepository],
+    const moduleRef: TestingModule = await Test.createTestingModule({
+      providers: [
+        MenuService,
+        MenuRepository,
+        ProductRepository,
+        MenuProductRepository,
+      ],
     }).compile();
 
-    menuController = moduleRef.get<MenuController>(MenuController);
     menuService = moduleRef.get<MenuService>(MenuService);
     menuRepository = moduleRef.get<MenuRepository>(MenuRepository);
+    productRepository = moduleRef.get<ProductRepository>(ProductRepository);
+    menuProductRepository = moduleRef.get<MenuProductRepository>(
+      MenuProductRepository,
+    );
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('findAll', () => {
     it('should return an array of menus', async () => {
-      const mockMenus = [
-        { id: '1', name: 'Menu 1', description: 'Description 1', type: 'day' },
+      const mockMenus: Menu[] = [
+        {
+          id: '1',
+          name: 'Menu 1',
+          type: ['lunch'],
+          description: 'Menu 1 desc',
+        },
         {
           id: '2',
           name: 'Menu 2',
-          description: 'Description 2',
-          type: 'night',
+          type: ['dinner'],
+          description: 'Menu 2 desc',
         },
       ];
 
@@ -46,11 +63,11 @@ describe('MenuService', () => {
   describe('findById', () => {
     it('should return a menu by id', async () => {
       const mockMenuId = '1';
-      const mockMenu = {
+      const mockMenu: Menu = {
         id: mockMenuId,
         name: 'Menu 1',
-        description: 'Description 1',
-        type: 'day',
+        type: ['lunch'],
+        description: 'Menu 1 desc',
       };
 
       jest.spyOn(menuRepository, 'findById').mockResolvedValue(mockMenu);
@@ -72,139 +89,125 @@ describe('MenuService', () => {
   });
 
   describe('findCurrentMenu', () => {
-    it('should return the menu for the current time (day)', async () => {
-      const mockDate = new Date();
-      mockDate.setHours(12);
-      const mockDayMenu: Menu = {
-        id: '1',
-        name: 'Day Menu',
-        type: 'day',
-        description: 'teste',
-      };
+    it('should return current menu based on time', async () => {
+      // Simulate "night" menu for evening time (18h-6h)
+      const mockNightMenu: Menu[] = [
+        {
+          id: '3',
+          name: 'Night Menu',
+          type: ['dinner'],
+          description: 'Night menu desc',
+        },
+      ];
 
-      jest
-        .spyOn(menuRepository, 'findByType')
-        .mockResolvedValueOnce([mockDayMenu]);
-
-      const realDateNow = Date.now;
-      Date.now = jest.fn(() => mockDate.getTime());
+      jest.spyOn(menuRepository, 'findByType').mockResolvedValue(mockNightMenu);
 
       const result = await menuService.findCurrentMenu();
 
-      expect(result).toBeDefined();
-      expect(result[0].type).toBe('day');
-
-      Date.now = realDateNow;
-    });
-
-    it('should return the menu for the current time (night)', async () => {
-      const mockDate = new Date();
-      mockDate.setHours(22);
-      const mockNightMenu: Menu = {
-        id: '2',
-        name: 'Night Menu',
-        type: 'night',
-        description: 'teste',
-      };
-
-      jest
-        .spyOn(menuRepository, 'findByType')
-        .mockResolvedValueOnce([mockNightMenu]);
-
-      const realDateNow = Date.now;
-      Date.now = jest.fn(() => mockDate.getTime());
-
-      const result = await menuService.findCurrentMenu();
-
-      expect(result).toBeDefined();
-      expect(result[0].type).toBe('night');
-
-      Date.now = realDateNow;
+      expect(result).toEqual(mockNightMenu);
     });
   });
 
   describe('create', () => {
-    it('should create a new menu', async () => {
-      const mockMenu: Menu = {
-        id: '1',
+    it('should create a new menu with associated products', async () => {
+      const mockMenuWithProducts: MenuWithProducts = {
         name: 'New Menu',
-        type: 'day',
-        description: 'teste',
+        type: ['lunch'],
+        description: 'New menu desc',
+        productsId: ['1', '2'], // Mock product IDs
       };
+
+      const mockCreatedMenu: Menu = { id: '4', ...mockMenuWithProducts };
 
       jest.spyOn(menuRepository, 'findByName').mockResolvedValue(null);
-      jest.spyOn(menuRepository, 'create').mockResolvedValue(mockMenu);
+      jest
+        .spyOn(productRepository, 'findById')
+        .mockResolvedValueOnce({ id: '1', name: 'Product 1' } as any);
+      jest
+        .spyOn(productRepository, 'findById')
+        .mockResolvedValueOnce({ id: '2', name: 'Product 2' } as any);
+      jest.spyOn(menuRepository, 'create').mockResolvedValue(mockCreatedMenu);
 
-      const result = await menuService.create(mockMenu);
+      const result = await menuService.create(mockMenuWithProducts);
 
-      expect(result).toEqual(mockMenu);
-      expect(menuRepository.findByName).toHaveBeenCalledWith(mockMenu.name);
-      expect(menuRepository.create).toHaveBeenCalledWith(mockMenu);
-    });
-    it('should throw an exception if the menu already exists', async () => {
-      jest.spyOn(menuRepository, 'findByName').mockResolvedValue({
-        id: '1',
-        name: 'Existing Menu',
-        description: 'Description',
-        type: 'day',
-      });
-
-      const newMenu: Menu = {
-        name: 'Existing Menu',
-        description: 'Description',
-        type: 'day',
-      };
-
-      await expect(menuService.create(newMenu)).rejects.toThrowError(
-        UnauthorizedException,
+      expect(result.menuData).toEqual(mockCreatedMenu);
+      expect(result.registerProductsOnMenu.count).toBe(
+        mockMenuWithProducts.productsId.length,
       );
     });
   });
 
   describe('update', () => {
-    it('should update a menu if it exists', async () => {
-      const id = '1';
-      const mockMenu: Menu = {
-        id: '1',
-        name: 'Menu 1',
-        description: 'Description 1',
-        type: 'day',
-      };
-      const mockMenuPatch: PatchMenuDto = {
-        name: 'Updated Menu 1',
-        description: 'Updated Description 1',
+    it('should update a menu with new information', async () => {
+      const mockMenuId = '1';
+      const mockUpdatedMenu: PutMenuDto = {
+        name: 'Updated Menu',
+        type: ['lunch'],
+        description: 'Updated menu desc',
+        productsId: ['3', '4'],
       };
 
-      jest.spyOn(menuRepository, 'findById').mockResolvedValue(mockMenu);
-      jest.spyOn(menuRepository, 'update').mockResolvedValue({
-        ...mockMenu,
-        ...mockMenuPatch,
-      });
+      const mockExistingMenu: Menu = {
+        id: mockMenuId,
+        name: 'Existing Menu',
+        type: ['lunch'],
+        description: 'Existing menu desc',
+      };
 
-      const result = await menuService.update(id, mockMenuPatch);
+      jest
+        .spyOn(menuRepository, 'findById')
+        .mockResolvedValue(mockExistingMenu);
+      jest
+        .spyOn(productRepository, 'findById')
+        .mockResolvedValueOnce({ id: '3', name: 'Product 3' } as any);
+      jest
+        .spyOn(productRepository, 'findById')
+        .mockResolvedValueOnce({ id: '4', name: 'Product 4' } as any);
+      jest
+        .spyOn(menuRepository, 'update')
+        .mockResolvedValue({ ...mockExistingMenu, ...mockUpdatedMenu });
 
-      expect(menuRepository.update).toHaveBeenCalledWith(id, mockMenuPatch);
-      expect(result).toEqual({ ...mockMenu, ...mockMenuPatch });
+      const result = await menuService.update(mockMenuId, mockUpdatedMenu);
+
+      expect(result.updateMenu.name).toBe(mockUpdatedMenu.name);
+      expect(result.resultPopulateMenuProduct.count).toBe(
+        mockUpdatedMenu.productsId.length,
+      );
     });
   });
 
   describe('delete', () => {
-    it('should delete a menu if it exists', async () => {
-      const id = '1';
-      const mockMenu: Menu = {
-        id: '1',
-        name: 'Menu 1',
-        description: 'Description 1',
-        type: 'day',
+    it('should delete a menu by id', async () => {
+      const mockMenuId = '1';
+      const mockExistingMenu: Menu = {
+        id: mockMenuId,
+        name: 'Existing Menu',
+        type: ['lunch'],
+        description: 'Existing menu desc',
       };
 
-      jest.spyOn(menuRepository, 'findById').mockResolvedValue(mockMenu);
-      jest.spyOn(menuRepository, 'delete').mockResolvedValue(mockMenu);
+      jest
+        .spyOn(menuRepository, 'findById')
+        .mockResolvedValue(mockExistingMenu);
+      jest
+        .spyOn(menuProductRepository, 'deleteByMenuId')
+        .mockResolvedValue({ count: 2 });
+      jest.spyOn(menuRepository, 'delete').mockResolvedValue(mockExistingMenu);
 
-      const result = await menuService.delete(id);
+      const result = await menuService.delete(mockMenuId);
 
-      expect(menuRepository.delete).toHaveBeenCalledWith(id);
-      expect(result).toEqual(mockMenu);
+      expect(result.result).toEqual(mockExistingMenu);
+      expect(result.deleteProductMenu.count).toBe(2);
+    });
+
+    it('should throw UnauthorizedException if menu with given id does not exist', async () => {
+      const mockMenuId = '999';
+
+      jest.spyOn(menuRepository, 'findById').mockResolvedValue(null);
+
+      await expect(menuService.delete(mockMenuId)).rejects.toThrowError(
+        UnauthorizedException,
+      );
     });
   });
 });

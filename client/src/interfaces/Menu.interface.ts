@@ -23,6 +23,10 @@ export interface MenuCarouselProps {
   setInputsData: React.Dispatch<React.SetStateAction<any>>;
   setIsNewItem: React.Dispatch<React.SetStateAction<boolean>>;
   type: string;
+  currentItem: string | null;
+  setCurrentItem: React.Dispatch<React.SetStateAction<string | null>>;
+  updateListData: boolean;
+  setUpdateListData: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export interface MenuDetails extends MenuObject {
   MenuProduct: ProductsMenu[];

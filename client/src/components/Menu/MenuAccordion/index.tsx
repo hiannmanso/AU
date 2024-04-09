@@ -14,6 +14,8 @@ interface MenuAccordionProps {
   productsData: Product[];
   selectedProductMenuData: string[];
   setSelectedProductMenuData: React.Dispatch<React.SetStateAction<string[]>>;
+  updateListData: boolean;
+  setUpdateListData: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function MenuAccordion({
@@ -21,10 +23,12 @@ export default function MenuAccordion({
   productsData,
   selectedProductMenuData,
   setSelectedProductMenuData,
+  updateListData,
+  setUpdateListData,
 }: MenuAccordionProps) {
   const [activeAccordion, setActiveAccordion] = useState<string | null>(null);
   const [isnewMenu, setIsNewMenu] = useState<boolean>(true);
-
+  const [currentItem, setCurrentItem] = useState<string | null>(null);
   const [menuInputsData, setMenuInputsData] = useState<MenuInputs>({
     name: "",
     description: "",
@@ -65,6 +69,10 @@ export default function MenuAccordion({
             inputData={menuInputsData}
             setInputsData={setMenuInputsData}
             setIsNewItem={setIsNewMenu}
+            currentItem={currentItem}
+            setCurrentItem={setCurrentItem}
+            updateListData={updateListData}
+            setUpdateListData={setUpdateListData}
             type={"menus"}
           />
           <MenuForm
@@ -74,6 +82,10 @@ export default function MenuAccordion({
             menuInputsData={menuInputsData}
             setMenuInputsData={setMenuInputsData}
             isnewMenu={isnewMenu}
+            setIsNewItem={setIsNewMenu}
+            updateListData={updateListData}
+            setUpdateListData={setUpdateListData}
+            setCurrentItem={setCurrentItem}
           />
         </div>
       )}

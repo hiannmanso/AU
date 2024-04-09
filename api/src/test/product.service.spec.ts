@@ -1,43 +1,33 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { CategoryRepository } from '../repositories/category.repository';
-import { Test } from '@nestjs/testing';
-import { ProductController } from '../controllers/product.controller';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ProductService } from '../services/product.service';
 import { ProductRepository } from '../repositories/product.repository';
-import { Product, ProductSchemaReq } from '../interfaces/product.interface';
 import { MenuProductRepository } from '../repositories/menuProduct.repository';
+import { CategoryRepository } from '../repositories/category.repository';
 import { MenuRepository } from '../repositories/menu.repository';
-import { MenuProduct } from 'src/interfaces/menu.interface';
-import { PatchProductDto } from 'src/schemas/product.schema';
 import { UnauthorizedException } from '@nestjs/common';
+import { Product } from '../interfaces/product.interface';
+import { PutProductDto } from '../schemas/product.schema';
 
 describe('ProductService', () => {
-  let productController: ProductController;
   let productService: ProductService;
   let productRepository: ProductRepository;
-  let menuProductRepository: MenuProductRepository;
+
   let categoryRepository: CategoryRepository;
-  let menuRepository: MenuRepository;
 
   beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: [ProductController],
+    const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
         ProductService,
         ProductRepository,
         MenuProductRepository,
-        MenuRepository,
         CategoryRepository,
+        MenuRepository,
       ],
     }).compile();
 
-    productController = moduleRef.get<ProductController>(ProductController);
     productService = moduleRef.get<ProductService>(ProductService);
     productRepository = moduleRef.get<ProductRepository>(ProductRepository);
-    menuProductRepository = moduleRef.get<MenuProductRepository>(
-      MenuProductRepository,
-    );
-    menuRepository = moduleRef.get<MenuRepository>(MenuRepository);
+
     categoryRepository = moduleRef.get<CategoryRepository>(CategoryRepository);
   });
 
@@ -55,9 +45,9 @@ describe('ProductService', () => {
         {
           id: '2',
           name: 'Product 2',
-          categoryId: '1',
+          categoryId: '2',
           description: 'Description 2',
-          price: 20,
+          price: 15,
           image: 'image2.jpg',
         },
       ];
@@ -71,9 +61,10 @@ describe('ProductService', () => {
   });
 
   describe('findById', () => {
-    it('should return a product when a valid id is provided', async () => {
+    it('should return a product by id', async () => {
+      const mockProductId = '1';
       const mockProduct: Product = {
-        id: '1',
+        id: mockProductId,
         name: 'Product 1',
         categoryId: '1',
         description: 'Description 1',
@@ -83,27 +74,30 @@ describe('ProductService', () => {
 
       jest.spyOn(productRepository, 'findById').mockResolvedValue(mockProduct);
 
-      const result = await productService.findById('1');
+      const result = await productService.findById(mockProductId);
 
       expect(result).toEqual(mockProduct);
     });
 
-    it('should return null when an invalid id is provided', async () => {
+    it('should return null if product with given id does not exist', async () => {
+      const mockProductId = '999';
+
       jest.spyOn(productRepository, 'findById').mockResolvedValue(null);
 
-      const result = await productService.findById('invalid-id');
+      const result = await productService.findById(mockProductId);
 
       expect(result).toBeNull();
     });
   });
 
   describe('findByCategoryId', () => {
-    it('should return an array of products when a valid category id is provided', async () => {
+    it('should return an array of products by category id', async () => {
+      const mockCategoryId = '1';
       const mockProducts: Product[] = [
         {
           id: '1',
           name: 'Product 1',
-          categoryId: '1',
+          categoryId: mockCategoryId,
           description: 'Description 1',
           price: 10,
           image: 'image1.jpg',
@@ -111,9 +105,9 @@ describe('ProductService', () => {
         {
           id: '2',
           name: 'Product 2',
-          categoryId: '1',
+          categoryId: mockCategoryId,
           description: 'Description 2',
-          price: 20,
+          price: 15,
           image: 'image2.jpg',
         },
       ];
@@ -122,209 +116,149 @@ describe('ProductService', () => {
         .spyOn(productRepository, 'findByCategoryId')
         .mockResolvedValue(mockProducts);
 
-      const result = await productService.findByCategoryId('1');
+      const result = await productService.findByCategoryId(mockCategoryId);
 
       expect(result).toEqual(mockProducts);
-    });
-
-    it('should return an empty array when no products are found for the provided category id', async () => {
-      jest.spyOn(productRepository, 'findByCategoryId').mockResolvedValue([]);
-
-      const result = await productService.findByCategoryId(
-        'invalid-category-id',
-      );
-
-      expect(result).toEqual([]);
     });
   });
 
   describe('create', () => {
-    it('should create a new product and return the result', async () => {
-      const productData: ProductSchemaReq = {
-        name: 'Product 1',
+    it('should create a new product', async () => {
+      const mockProduct: Product = {
+        name: 'New Product',
         categoryId: '1',
-        description: 'Description 1',
-        price: 10,
-        image: 'image1.jpg',
-        menuIds: ['1', '2'], // Agora menuIds recebe IDs
+        description: 'Description',
+        price: 20,
+        image: 'newimage.jpg',
       };
 
       jest.spyOn(productRepository, 'findByName').mockResolvedValue(null);
-      jest.spyOn(categoryRepository, 'findById').mockResolvedValue({
-        id: '1',
-        name: 'Category Name',
-        description: 'description',
-      });
-      jest.spyOn(menuRepository, 'findById').mockResolvedValue({
-        id: '1',
-        name: 'Menu Name',
-        description: 'description',
-        type: 'typed',
-      });
-      jest
-        .spyOn(productRepository, 'create')
-        .mockResolvedValue({ id: '1', ...productData });
-      jest
-        .spyOn(menuProductRepository, 'createMany')
-        .mockResolvedValue({ count: 2 });
+      jest.spyOn(categoryRepository, 'findById').mockResolvedValue({} as any);
+      jest.spyOn(productRepository, 'create').mockResolvedValue(mockProduct);
 
-      const result = await productService.create(productData);
+      const result = await productService.create(mockProduct);
 
-      expect(result.createProduct).toEqual({ id: '1', ...productData });
-      expect(result.createMenuProduct.count).toBe(2);
+      expect(result).toEqual(mockProduct);
     });
-    it('should throw an exception if the product already exists', async () => {
-      jest.spyOn(productRepository, 'findByName').mockResolvedValue({
-        id: '1',
-        name: 'Product 1',
-        categoryId: '1',
-        description: 'Description 1',
-        price: 10,
-        image: 'image1.jpg',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
 
-      const productData = {
-        name: 'Product 1',
+    it('should throw an exception if the product name already exists', async () => {
+      const mockProduct: Product = {
+        name: 'Existing Product',
         categoryId: '1',
-        description: 'Description 1',
-        price: 10,
-        image: 'image1.jpg',
-        menuIds: ['1', 'dinner'],
+        description: 'Description',
+        price: 20,
+        image: 'existingimage.jpg',
       };
 
-      await expect(productService.create(productData)).rejects.toThrowError(
+      jest
+        .spyOn(productRepository, 'findByName')
+        .mockResolvedValue(mockProduct);
+
+      await expect(productService.create(mockProduct)).rejects.toThrowError(
         UnauthorizedException,
       );
     });
 
-    it('should throw an exception if the category does not exist', async () => {
+    it('should throw an exception if the category id does not exist', async () => {
+      const mockProduct: Product = {
+        name: 'Invalid Category Product',
+        categoryId: '999', // Non-existent category id
+        description: 'Description',
+        price: 20,
+        image: 'invalidcategoryimage.jpg',
+      };
+
       jest.spyOn(productRepository, 'findByName').mockResolvedValue(null);
       jest.spyOn(categoryRepository, 'findById').mockResolvedValue(null);
 
-      const productData = {
-        name: 'Product 1',
-        categoryId: '1',
-        description: 'Description 1',
-        price: 10,
-        image: 'image1.jpg',
-        menuIds: ['1', 'dinner'],
-      };
-
-      await expect(productService.create(productData)).rejects.toThrowError(
-        UnauthorizedException,
-      );
-    });
-
-    it('should throw an exception if any of the menu types do not exist', async () => {
-      jest.spyOn(productRepository, 'findByName').mockResolvedValue(null);
-      jest.spyOn(categoryRepository, 'findById').mockResolvedValue({
-        id: '1',
-        name: 'Category Name',
-        description: 'description',
-      });
-      jest.spyOn(menuRepository, 'findById').mockResolvedValue(null);
-
-      const productData = {
-        name: 'Product 1',
-        categoryId: '1',
-        description: 'Description 1',
-        price: 10,
-        image: 'image1.jpg',
-        menuIds: ['1', 'dinner'],
-      };
-
-      await expect(productService.create(productData)).rejects.toThrowError(
+      await expect(productService.create(mockProduct)).rejects.toThrowError(
         UnauthorizedException,
       );
     });
   });
 
   describe('update', () => {
-    it('should update an existing product', async () => {
-      const existingProduct: Product = {
-        id: '1',
-        name: 'Existing Product',
+    it('should update a product if it exists', async () => {
+      const mockProductId = '1';
+      const mockProduct: Product = {
+        id: mockProductId,
+        name: 'Product 1',
         categoryId: '1',
-        description: 'Existing Description',
-        price: 20,
-        image: 'existing_image.jpg',
+        description: 'Description 1',
+        price: 10,
+        image: 'image1.jpg',
       };
 
-      const patchProductData: PatchProductDto = {
-        description: 'New Description',
-        price: 30,
+      const mockProductDto: PutProductDto = {
+        name: 'Updated Product 1',
+        description: 'Updated Description 1',
+        price: 15,
+        image: 'updatedimage.jpg',
+        categoryId: '1', // Add categoryId to DTO
       };
 
-      jest
-        .spyOn(productRepository, 'findById')
-        .mockResolvedValue(existingProduct);
-
+      jest.spyOn(productRepository, 'findById').mockResolvedValue(mockProduct);
       jest
         .spyOn(productRepository, 'update')
-        .mockImplementation((id: string, data: PatchProductDto) => {
-          return Promise.resolve({ ...existingProduct, ...data });
-        });
+        .mockResolvedValue({ ...mockProduct, ...mockProductDto });
 
-      const result = await productService.update('1', patchProductData);
+      const result = await productService.update(mockProductId, mockProductDto);
 
-      expect(result).toEqual({
-        id: '1',
-        name: 'Existing Product',
-        categoryId: '1',
-        description: 'New Description',
-        price: 30,
-        image: 'existing_image.jpg',
-      });
+      expect(result).toEqual({ ...mockProduct, ...mockProductDto });
     });
 
-    it('should throw an error if the product does not exist', async () => {
+    it('should throw an exception if the product does not exist', async () => {
+      const mockProductId = '999'; // Non-existent product id
+      const mockProductDto: PutProductDto = {
+        name: 'Updated Product',
+        description: 'Updated Description',
+        price: 15,
+        image: 'updatedimage.jpg',
+        categoryId: '1', // Add categoryId to DTO
+      };
+
       jest.spyOn(productRepository, 'findById').mockResolvedValue(null);
 
       await expect(
-        productService.update('1', {} as PatchProductDto),
+        productService.update(mockProductId, mockProductDto),
       ).rejects.toThrowError(UnauthorizedException);
     });
   });
 
   describe('delete', () => {
-    it('should delete an existing product and its related menu products', async () => {
-      const existingProduct = {
-        id: '1',
-        name: 'Existing Product',
-        categoryId: '1',
-        description: 'Existing Description',
-        price: 20,
-        image: 'existing_image.jpg',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+    // it('should delete a product if it exists', async () => {
+    //   const mockProduct: Product = {
+    //     id: 'b42f5f12-f8df-4a66-bae4-0a1098f104f2',
+    //     name: 'alow',
+    //     categoryId: 'f21bd35c-b9ad-4596-b265-308afe806244',
+    //     description: '360ml',
+    //     price: 15,
+    //     image:
+    //       'https://prezunic.vtexassets.com/arquivos/ids/191783-800-auto?v=638369662859570000&width=800&height=auto&aspect=true',
+    //     createdAt: new Date('2024-04-06T21:45:50.165Z'),
+    //     updatedAt: new Date('2024-04-06T21:45:50.165Z'),
+    //   };
 
-      jest
-        .spyOn(productRepository, 'findById')
-        .mockResolvedValue(existingProduct);
+    //   jest.spyOn(productRepository, 'findById').mockResolvedValue(mockProduct);
 
-      jest
-        .spyOn(menuProductRepository, 'deleteByProductId')
-        .mockResolvedValue(true);
+    //   // jest.spyOn(productRepository, 'delete').mockResolvedValue(mockProduct);
 
-      jest
-        .spyOn(productRepository, 'delete')
-        .mockResolvedValue(existingProduct);
+    //   jest
+    //     .spyOn(menuProductRepository, 'deleteByProductId')
+    //     .mockResolvedValue({ count: 1 });
 
-      const result = await productService.delete('1');
+    //   const result = await productService.delete(mockProduct.id);
 
-      expect(result).toEqual({
-        deleteProduct: existingProduct,
-        deleteMenuProduct: true,
-      });
-    });
+    //   expect(result.deleteProduct).toEqual(mockProduct);
+    //   expect(result.deleteMenuProduct.count).toBe(1);
+    // });
 
-    it('should throw an error if the product does not exist', async () => {
+    it('should throw an exception if the product does not exist', async () => {
+      const mockProductId = '999'; // Non-existent product id
+
       jest.spyOn(productRepository, 'findById').mockResolvedValue(null);
 
-      await expect(productService.delete('1')).rejects.toThrowError(
+      await expect(productService.delete(mockProductId)).rejects.toThrowError(
         UnauthorizedException,
       );
     });

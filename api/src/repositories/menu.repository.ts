@@ -28,7 +28,9 @@ export class MenuRepository {
           has: type,
         },
       },
-      include: { MenuProduct: { include: { product: {} } } },
+      include: {
+        MenuProduct: { include: { product: { include: { category: {} } } } },
+      },
     });
   }
   async create(menu: Menu): Promise<Menu> {

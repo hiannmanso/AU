@@ -8,7 +8,7 @@ import { MenuDetails } from "@/interfaces/Menu.interface";
 import { Product } from "@/interfaces/Product.interface";
 import { Category } from "@/interfaces/Category.interface";
 import { useGlobalContext } from "@/contexts/GlobalContext";
-
+import { toast } from "react-toastify";
 export default function Settings() {
   const { setOptionHeader } = useGlobalContext();
   const [menusData, setMenusData] = useState<MenuDetails[]>([]);
@@ -17,13 +17,20 @@ export default function Settings() {
   const [selectedProductMenuData, setSelectedProductMenuData] = useState<
     string[]
   >([]);
+  const [updateMenuData, setUpdateMenuData] = useState<boolean>(false);
+  const [updateCategoryData, setUpdateCategoryData] = useState<boolean>(false);
+  const [updateProductData, setUpdateProductData] = useState<boolean>(false);
 
+  setOptionHeader("settings");
   useEffect(() => {
-    setOptionHeader("settings");
     loaderData("menus", setMenusData);
+  }, [updateMenuData]);
+  useEffect(() => {
     loaderData("categories", setCategoriesData);
+  }, [updateCategoryData]);
+  useEffect(() => {
     loaderData("products", setProductsData);
-  }, []);
+  }, [updateProductData]);
 
   function loaderData(
     endpoint: string,
@@ -49,16 +56,22 @@ export default function Settings() {
         productsData={productsData}
         selectedProductMenuData={selectedProductMenuData}
         setSelectedProductMenuData={setSelectedProductMenuData}
+        updateListData={updateMenuData}
+        setUpdateListData={setUpdateMenuData}
       />
       <CategoryAccordion
         categoriesData={categoriesData}
         productsData={productsData}
         active={true}
+        updateListData={updateCategoryData}
+        setUpdateListData={setUpdateCategoryData}
       />
       <ProductAccordion
         productsData={productsData}
         categoriesData={categoriesData}
         active={true}
+        updateListData={updateProductData}
+        setUpdateListData={setUpdateProductData}
       />
     </div>
   );

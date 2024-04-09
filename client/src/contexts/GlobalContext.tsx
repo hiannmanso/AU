@@ -12,6 +12,10 @@ interface GlobalContextType {
   >;
   menuOptions: any;
   setMenuOptions: React.Dispatch<React.SetStateAction<any>>;
+  optionSelected: string;
+  setOptionSelected: React.Dispatch<React.SetStateAction<string>>;
+  listedProducts: any[];
+  setListedProducts: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export const GlobalContext = createContext<GlobalContextType | undefined>(
@@ -27,7 +31,8 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
     undefined
   );
   const [menuOptions, setMenuOptions] = useState("");
-
+  const [optionSelected, setOptionSelected] = useState("");
+  const [listedProducts, setListedProducts] = useState([]);
   return (
     <GlobalContext.Provider
       value={{
@@ -39,6 +44,10 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
         setInfosModal,
         menuOptions,
         setMenuOptions,
+        optionSelected,
+        setOptionSelected,
+        listedProducts,
+        setListedProducts,
       }}
     >
       {children}

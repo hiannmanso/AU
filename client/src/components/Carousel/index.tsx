@@ -4,7 +4,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { MenuCarouselProps } from "../../interfaces/Menu.interface";
 import axios from "axios";
-
+import { toast } from "react-toastify";
+import { IoIosCloseCircleOutline } from "react-icons/io";
 function Carousel({
   data,
   setSelectedItemData,
@@ -12,9 +13,12 @@ function Carousel({
   setInputsData,
   setIsNewItem,
   type,
+  currentItem,
+  setCurrentItem,
+  updateListData,
+  setUpdateListData,
 }: MenuCarouselProps & { type: "menus" | "products" | "categories" }) {
   const sliderRef = useRef<Slider>(null);
-  const [currentItem, setCurrentItem] = useState<string | null>(null);
 
   function deleteItem(id: string) {
     const confirmDelete = window.confirm(
@@ -26,9 +30,12 @@ function Carousel({
         .delete(`http://localhost:3000/${type}/${id}`)
         .then(function (response) {
           console.log("Item deleted successfully:", response);
+          setUpdateListData(!updateListData);
+          toast.success("Item deleted successfully!");
         })
         .catch(function (err) {
           console.error("Error deleting item:", err);
+          toast.error(err.message);
         });
     } else {
       console.log("Deletion cancelled.");
@@ -105,7 +112,7 @@ function Carousel({
           {data &&
             data.map((item: any, index: number) => {
               return (
-                <div key={index} className="mb-2">
+                <div key={index} className="mb-2 relative">
                   <div
                     className={`opacity-95 px-1 py-2 m-1 rounded-lg shadow-md h-full ${
                       currentItem === item.id ? "bg-blue-100" : "bg-white"
@@ -125,13 +132,12 @@ function Carousel({
                       <p className="text-sm mb-1 line-clamp-2">{`itens:${item.Product.length}`}</p>
                     ) : undefined}
                     <div>
-                      <p
+                      <IoIosCloseCircleOutline
+                        className="absolute top-3 right-3"
                         onClick={() => {
                           deleteItem(item.id);
                         }}
-                      >
-                        x
-                      </p>
+                      />
                     </div>
                   </div>
                 </div>

@@ -5,6 +5,7 @@ import ProductsBox from "@/components/ProductsBox";
 import { MenuInputs } from "@/interfaces/Menu.interface";
 import { Product } from "@/interfaces/Product.interface";
 import Form from "@/components/Form";
+import { toast } from "react-toastify";
 
 interface MenuFormProps {
   productsData: Product[];
@@ -13,6 +14,10 @@ interface MenuFormProps {
   menuInputsData: MenuInputs;
   setMenuInputsData: React.Dispatch<React.SetStateAction<MenuInputs>>;
   isnewMenu: boolean;
+  setIsNewItem: React.Dispatch<React.SetStateAction<boolean>>;
+  updateListData: boolean;
+  setUpdateListData: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrentItem: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 function MenuForm({
@@ -22,6 +27,10 @@ function MenuForm({
   menuInputsData,
   setMenuInputsData,
   isnewMenu,
+  setIsNewItem,
+  updateListData,
+  setUpdateListData,
+  setCurrentItem,
 }: MenuFormProps) {
   function createNewMenu() {
     axios
@@ -33,9 +42,13 @@ function MenuForm({
         console.log(response);
         setMenuInputsData({ name: "", description: "", type: [] });
         setSelectedProductMenuData([]);
+        setUpdateListData(!updateListData);
+        setIsNewItem(true);
+        toast.success("Menu created successfully!");
       })
       .catch((err) => {
         console.log(err);
+        toast.error(err.message);
       });
   }
   function editMenu() {
@@ -50,10 +63,15 @@ function MenuForm({
         console.log(response);
         setMenuInputsData({ name: "", description: "", type: [] });
         setSelectedProductMenuData([]);
+        setUpdateListData(!updateListData);
+        setIsNewItem(true);
+        setCurrentItem(null);
+        toast.success("Menu updated successfully!");
       })
       .catch((err) => {
         console.log(err);
-        console.log(menuInputsData, productsData);
+
+        toast.error(err.message);
       });
   }
 

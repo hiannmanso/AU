@@ -8,18 +8,16 @@ import { useGlobalContext } from "../../contexts/GlobalContext";
 import { useRouter } from "next/router";
 import { OptionHeader } from "@/interfaces/OptionHeader.interface";
 export default function Header() {
-  const { optionHeader, setOptionHeader, menuOptions } = useGlobalContext();
+  const {
+    optionHeader,
+    setOptionHeader,
+    menuOptions,
+    optionSelected,
+    setOptionSelected,
+    setListedProducts,
+  } = useGlobalContext();
   const router = useRouter();
 
-  // const [options, setOptions] = useState([
-  //   "All",
-  //   "Breakfast",
-  //   "Lunch",
-  //   "Coctails",
-  //   "Dinner",
-  // ]);
-  // console.log(menuOptions);
-  const [optionSelected, setOptionSelected] = useState("All");
   return (
     <div className="w-screen h-32 flex flex-col items-center justify-between pt-11 shadow-sm overflow-x-auto">
       <div className="font-bold text-4xl tracking-widest flex flex-row items-center gap-3 ">
@@ -65,7 +63,7 @@ export default function Header() {
         </div>
       </div>
       <div className="flex flex-row gap-0 sm:gap-4 text-sm text-primary font-bold ">
-        {menuOptions ? (
+        {menuOptions && optionHeader == "menu" ? (
           menuOptions.map((option: OptionHeader, index: number) => {
             // console.log(option);
             return (
@@ -78,6 +76,8 @@ export default function Header() {
                 }
                 onClick={() => {
                   setOptionSelected(option.name);
+                  console.log("AQUI", option.MenuProduct);
+                  setListedProducts(option.MenuProduct);
                 }}
               >
                 <h2>{option.name}</h2>

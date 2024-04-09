@@ -5,6 +5,8 @@ import { CategoryInputs, ProductInputs } from "@/interfaces/Menu.interface";
 import { Product } from "@/interfaces/Product.interface";
 import Form from "@/components/Form";
 import { Category } from "@/interfaces/Category.interface";
+import { toast } from "react-toastify";
+import CardItem from "@/components/CardItem";
 
 interface ProductFormProps {
   productsData: Product[];
@@ -14,6 +16,9 @@ interface ProductFormProps {
   setProductInputsData: React.Dispatch<React.SetStateAction<ProductInputs>>;
   isnewProduct: boolean;
   categoriesData: Category[];
+  updateListData: boolean;
+  setUpdateListData: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrentItem: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 function ProductForm({
@@ -24,6 +29,9 @@ function ProductForm({
   setProductInputsData,
   isnewProduct,
   categoriesData,
+  updateListData,
+  setUpdateListData,
+  setCurrentItem,
 }: ProductFormProps) {
   function createNewProduct() {
     console.log(productInputsData);
@@ -45,9 +53,12 @@ function ProductForm({
           price: 0,
         });
         setSelectedProductData([]);
+        setUpdateListData(!updateListData);
+        toast.success("Product created successfully!");
       })
       .catch((err) => {
         console.log(err);
+        toast.error(err.message);
       });
   }
   function editProduct() {
@@ -69,10 +80,13 @@ function ProductForm({
           price: 0,
         });
         setSelectedProductData([]);
+        setUpdateListData(!updateListData);
+        setCurrentItem(null);
+        toast.success("Product updated successfully!");
       })
       .catch((err) => {
         console.log(err);
-        console.log(productInputsData, productsData);
+        toast.error(err.message);
       });
   }
 
@@ -105,6 +119,17 @@ function ProductForm({
           formFields={formFields}
           multiplies={false}
         />
+        <div className="flex items-center justify-center">
+          <CardItem
+            data={{
+              titleProduct: productInputsData.name,
+              category: productInputsData.category,
+              description: productInputsData.description,
+              image: productInputsData.image,
+              price: productInputsData.price,
+            }}
+          />
+        </div>
 
         <div className="flex justify-end m-4">
           {isnewProduct ? (
@@ -112,14 +137,14 @@ function ProductForm({
               className="bg-primary px-2 py-1 text-white rounded-md shadow-md"
               onClick={createNewProduct}
             >
-              CREATE NEW CATEGORY
+              CREATE NEW PRODUCT
             </button>
           ) : (
             <button
               className="bg-primary px-2 py-1 text-white rounded-md shadow-md"
               onClick={editProduct}
             >
-              EDIT CATEGORY
+              EDIT PRODUCT
             </button>
           )}
         </div>

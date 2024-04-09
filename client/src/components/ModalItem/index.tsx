@@ -12,7 +12,7 @@ const inter = Inter({
 export default function ModalItem() {
   const { infosModal, setInfosModal, isOpenModal, setIsOpenModal } =
     useGlobalContext();
-  console.log(infosModal);
+
   return (
     <>
       {isOpenModal && (

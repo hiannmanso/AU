@@ -14,16 +14,20 @@ interface CategoryAccordionProps {
   categoriesData: Category[];
   productsData: Product[];
   active: boolean;
+  updateListData: boolean;
+  setUpdateListData: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function CategoryAccordion({
   categoriesData,
   productsData,
   active,
+  updateListData,
+  setUpdateListData,
 }: CategoryAccordionProps) {
   const [activeAccordion, setActiveAccordion] = useState<string | null>(null);
   const [isnewCategory, setIsNewCategory] = useState<boolean>(true);
-
+  const [currentItem, setCurrentItem] = useState<string | null>(null);
   const [categoryInputsData, setCategoryInputsData] = useState<CategoryInputs>({
     name: "",
     description: "",
@@ -65,6 +69,10 @@ function CategoryAccordion({
             inputData={categoryInputsData}
             setInputsData={setCategoryInputsData}
             setIsNewItem={setIsNewCategory}
+            currentItem={currentItem}
+            setCurrentItem={setCurrentItem}
+            updateListData={updateListData}
+            setUpdateListData={setUpdateListData}
             type={"categories"}
           />
 
@@ -75,6 +83,9 @@ function CategoryAccordion({
             categoryInputsData={categoryInputsData}
             setCategoryInputsData={setCategoryInputsData}
             isnewCategory={isnewCategory}
+            updateListData={updateListData}
+            setUpdateListData={setUpdateListData}
+            setCurrentItem={setCurrentItem}
           />
         </div>
       )}

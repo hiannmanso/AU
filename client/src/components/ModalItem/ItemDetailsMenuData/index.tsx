@@ -1,55 +1,65 @@
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import Image from "next/image";
 import { Inter } from "next/font/google";
 
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
 });
-export default function ItemDetailsMenuData({}) {
-  const { infosModal, setInfosModal, isOpenModal, setIsOpenModal } =
-    useGlobalContext();
+
+export default function ItemDetailsMenuData() {
+  const { infosModal } = useGlobalContext();
+  function isSmallScreen() {
+    if (typeof window !== "undefined") {
+      return window.innerWidth < 768;
+    }
+    return false;
+  }
+
   return (
-    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[45rem] h-[30rem] bg-white z-20 flex justify-center items-center border rounded-lg shadow-lg">
+    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white z-20 border rounded-lg shadow-lg via-gray-300">
       {infosModal ? (
-        <>
-          <div className="bg-slate-600 h-full w-full">
-            <Image
-              className="w-full h-full"
+        <div className="w-[45rem] h-[30rem] flex justify-center">
+          <div className="hidden sm:block w-1/2 h-full rounded-l-lg overflow-hidden">
+            <img
+              className="w-full h-full object-cover rounded-l-lg"
               src={infosModal.image}
-              width={1000}
-              height={1000}
-              alt="Picture of the author"
+              alt="Product Image"
             />
           </div>
-          <div className=" flex flex-col justify-center h-full ">
-            <div className="flex flex-row w-fit items-center rounded-full bg-primary bg-opacity-60 border px-2 py-1">
-              <div className="w-2 h-2 bg-primary rounded-full "></div>
 
+          <div
+            className={`w-full h-full p-6 flex flex-col justify-center items-center gap-4 ${
+              isSmallScreen() ? "sm:bg-opacity-50 bg-cover bg-center" : ""
+            }`}
+          >
+            <div className="hidden sm:flex flex-row items-center rounded-full bg-primary bg-opacity-60 border px-2 py-1 mb-4">
+              <div className="w-2 h-2 bg-primary rounded-full"></div>
               <p
-                className={`text-brown-dark font-semibold ${inter.className} pl-2`}
+                className={`text-brown-dark font-semibold ${inter.className} pl-2 text-white`}
               >
                 {infosModal.category}
               </p>
             </div>
 
             <h1
-              className={`text-2xl text-gray-800 font-bold mb-2 ${inter.className}`}
+              className={`text-2xl sm:text-4xl md:text-7xl font-bold mb-2 text-center ${inter.className}`}
             >
               {infosModal.titleProduct}
             </h1>
 
-            <h2 className={`text-sm text-gray-600 mb-4 ${inter.className}`}>
+            <h2
+              className={`text-sm sm:text-base md:text-lg text-gray-600 mb-4 ${inter.className} text-center`}
+            >
               {infosModal.description}
             </h2>
 
             <p
-              className={`text-green-500 text-lg font-bold  ${inter.className}`}
+              className={`text-lg sm:text-xl md:text-2xl text-green-500 font-bold ${inter.className}`}
             >
               R$ {infosModal.price.toFixed(2)}
             </p>
           </div>
-        </>
+        </div>
       ) : undefined}
     </div>
   );

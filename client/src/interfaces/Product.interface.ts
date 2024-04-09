@@ -1,5 +1,8 @@
+import { Category } from "./Category.interface";
+
 export interface Product {
   categoryId: string;
+
   createdAt: string;
   description: string;
   id: string;
@@ -13,4 +16,15 @@ export interface ProductsBoxProps {
   selectedProductMenuData: string[];
   setSelectedProductMenuData: React.Dispatch<React.SetStateAction<string[]>>;
   disable: boolean;
+}
+export interface ProductEntry {
+  createdAt: string;
+  id: string;
+  menuId: string;
+  product: ProductWithCategory;
+  productId: string;
+  updatedAt: string;
+}
+interface ProductWithCategory extends Product {
+  category: Category;
 }

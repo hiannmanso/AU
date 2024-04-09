@@ -1,57 +1,86 @@
 import CardItem from "@/components/CardItem";
-import Header from "../components/Header";
+
 import ModalItem from "@/components/ModalItem";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import { ProductEntry } from "@/interfaces/Product.interface";
+import { Inter } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+});
+
+function groupProductsByCategory(products: any) {
+  const groupedProducts: Record<string, ProductEntry[]> = {};
+
+  products.forEach((product: ProductEntry) => {
+    const categoryName = product.product.category.name;
+
+    if (!groupedProducts[categoryName]) {
+      groupedProducts[categoryName] = [];
+    }
+
+    groupedProducts[categoryName].push(product);
+  });
+
+  return groupedProducts;
+}
 
 export default function Home() {
-  // const [menuOptions, setMenuOptions] = useState();
-  const { setMenuOptions } = useGlobalContext();
+  const {
+    setMenuOptions,
+    setOptionHeader,
+    setOptionSelected,
+    listedProducts,
+    setListedProducts,
+  } = useGlobalContext();
+
   useEffect(() => {
+    setOptionHeader("menu");
     getCurrentMenus();
   }, []);
+
   async function getCurrentMenus() {
-    axios({
-      method: "GET",
-      url: `http://localhost:3000/menus/current`,
-    })
-      .then((response) => {
-        console.log(response);
-        setMenuOptions(response.data);
-      })
-      .catch((err) => {
-        console.log(err);
-        console.log(process.env.DATABASE_URL);
-      });
+    try {
+      const response = await axios.get(`http://localhost:3000/menus/current`);
+      const firstCategoryProducts = response.data[0]?.MenuProduct || [];
+      setMenuOptions(response.data);
+      setListedProducts(firstCategoryProducts);
+      setOptionSelected(response.data[0]?.name);
+    } catch (error) {
+      console.error("Erro ao buscar os menus:", error);
+    }
   }
+
+  const groupedProducts = groupProductsByCategory(listedProducts);
 
   return (
     <>
       <ModalItem />
-      <div className="m-auto w-4/5 py-14 px-10 flex flex-wrap gap-6 items-center justify-start">
-        <CardItem
-          data={{
-            titleProduct: "Title Pizza",
-            description:
-              "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet,consectetur, adipisci velit... There is no one who loves pain itself,who seeks after it and wants to have it, simply because it is pain..",
-            image:
-              "https://t3.ftcdn.net/jpg/06/27/23/56/360_F_627235669_iz0O2leKYRzjxAKdFP7odpp9eCOZREtN.jpg",
-            price: 20.0,
-            category: "Lunch",
-          }}
-        />
-        <CardItem
-          data={{
-            titleProduct: "Title Pizza",
-            description:
-              "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet,consectetur, adipisci velit... There is no one who loves pain itself,who seeks after it and wants to have it, simply because it is pain..",
-            image:
-              "https://img.freepik.com/fotos-gratis/hamburguer-saboroso-isolado-no-fundo-branco-fastfood-de-hamburguer-fresco-com-carne-e-queijo_90220-1063.jpg?size=626&ext=jpg",
-            price: 20.0,
-            category: "Lunch",
-          }}
-        />
+      <div className="m-auto w-4/5 py-14 px-10">
+        {Object.entries(groupedProducts).map(([categoryName, products]) => (
+          <div key={categoryName} className="mb-8">
+            <h1 className={`text-2xl font-bold mb-4 ${inter.className}`}>
+              {categoryName}
+            </h1>
+            <div className="flex flex-row justify-start flex-wrap gap-5">
+              {products.map((product: ProductEntry, index: number) => (
+                <CardItem
+                  key={index}
+                  data={{
+                    titleProduct: product.product.name,
+                    description: product.product.description,
+                    image: product.product.image,
+                    price: product.product.price,
+                    category: product.product.category.name,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </>
   );

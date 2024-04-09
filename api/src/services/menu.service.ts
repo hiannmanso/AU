@@ -9,8 +9,8 @@ import {
 import { MenuRepository } from '../repositories/menu.repository';
 import { PutMenuDto } from '../schemas/menu.schema';
 import { throwUnauthorizedException } from '../helper/error.helper';
-import { ProductRepository } from 'src/repositories/product.repository';
-import { MenuProductRepository } from 'src/repositories/menuProduct.repository';
+import { ProductRepository } from '../repositories/product.repository';
+import { MenuProductRepository } from '../repositories/menuProduct.repository';
 
 @Injectable()
 export class MenuService {

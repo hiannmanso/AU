@@ -4,6 +4,7 @@ import ProductsBox from "@/components/ProductsBox";
 import { CategoryInputs } from "@/interfaces/Menu.interface";
 import { Product } from "@/interfaces/Product.interface";
 import Form from "@/components/Form";
+import { toast } from "react-toastify";
 
 interface CategoryFormProps {
   productsData: Product[];
@@ -14,6 +15,9 @@ interface CategoryFormProps {
   categoryInputsData: CategoryInputs;
   setCategoryInputsData: React.Dispatch<React.SetStateAction<CategoryInputs>>;
   isnewCategory: boolean;
+  updateListData: boolean;
+  setUpdateListData: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrentItem: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 function CategoryForm({
@@ -23,6 +27,9 @@ function CategoryForm({
   categoryInputsData,
   setCategoryInputsData,
   isnewCategory,
+  updateListData,
+  setUpdateListData,
+  setCurrentItem,
 }: CategoryFormProps) {
   function createNewCategory() {
     axios
@@ -33,9 +40,12 @@ function CategoryForm({
         console.log(response);
         setCategoryInputsData({ name: "", description: "" });
         setSelectedProductCategoryData([]);
+        setUpdateListData(!updateListData);
+        toast.success("Category created successfully!");
       })
       .catch((err) => {
         console.log(err);
+        toast.error(err.message);
       });
   }
   function editCategory() {
@@ -48,10 +58,13 @@ function CategoryForm({
         console.log(response);
         setCategoryInputsData({ name: "", description: "" });
         setSelectedProductCategoryData([]);
+        setUpdateListData(!updateListData);
+        setCurrentItem(null);
+        toast.success("Category updated successfully!");
       })
       .catch((err) => {
         console.log(err);
-        console.log(categoryInputsData, productsData);
+        toast.error(err.message);
       });
   }
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Inter } from "next/font/google";
 import { Product } from "@/interfaces/Product.interface";
-import { MenuInputs, ProductInputs } from "@/interfaces/Menu.interface";
+import { ProductInputs } from "@/interfaces/Menu.interface";
 import Carousel from "@/components/Carousel";
 import ProductForm from "../ProductForm";
 import { Category } from "@/interfaces/Category.interface";
@@ -13,12 +13,16 @@ interface ProductAccordionProps {
   productsData: Product[];
   active: boolean;
   categoriesData: Category[];
+  updateListData: boolean;
+  setUpdateListData: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function ProductAccordion({
   productsData,
   active,
   categoriesData,
+  updateListData,
+  setUpdateListData,
 }: ProductAccordionProps) {
   const [activeAccordion, setActiveAccordion] = useState<string | null>(null);
   const [productInputsData, setProductInputsData] = useState<ProductInputs>({
@@ -30,7 +34,7 @@ function ProductAccordion({
   });
   const [selectedProductData, setSelectedProductData] = useState<string[]>([]);
   const [isnewProduct, setIsNewProduct] = useState<boolean>(true);
-
+  const [currentItem, setCurrentItem] = useState<string | null>(null);
   function toggleAccordion() {
     setActiveAccordion((prev) => (prev === "product" ? null : "product"));
   }
@@ -65,6 +69,10 @@ function ProductAccordion({
             inputData={productInputsData}
             setInputsData={setProductInputsData}
             setIsNewItem={setIsNewProduct}
+            currentItem={currentItem}
+            setCurrentItem={setCurrentItem}
+            updateListData={updateListData}
+            setUpdateListData={setUpdateListData}
             type={"products"}
           />
           <ProductForm
@@ -75,8 +83,10 @@ function ProductAccordion({
             selectedProductData={selectedProductData}
             setProductInputsData={setProductInputsData}
             categoriesData={categoriesData}
+            updateListData={updateListData}
+            setUpdateListData={setUpdateListData}
+            setCurrentItem={setCurrentItem}
           />
-          Conteúdo do produto...
         </div>
       )}
     </div>

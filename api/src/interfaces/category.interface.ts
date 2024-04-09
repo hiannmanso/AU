@@ -7,6 +7,6 @@ export interface Category {
 }
 
 export interface CategoryPatch {
-  name?: string;
-  description?: string;
+  name: string;
+  description: string;
 }
