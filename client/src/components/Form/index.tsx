@@ -36,17 +36,16 @@ function Form<T extends Record<string, any>>({
       .filter((option) => option.selected)
       .map((option) => option.value);
 
-    if (multiplies) {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: selectedOptions,
-      }));
-    } else {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: selectedOptions[0] || "",
-      }));
-    }
+    const newValue = multiplies
+      ? selectedOptions
+      : selectedOptions.length > 0
+      ? selectedOptions[0]
+      : "";
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: newValue,
+    }));
   }
 
   return (

@@ -32,8 +32,30 @@ function ProductForm({
   setUpdateListData,
   setCurrentItem,
 }: ProductFormProps) {
+  function checkObjectNotEmpty(obj: Record<string, any>): boolean {
+    // Percorre todas as chaves do objeto
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        const value = obj[key];
+
+        // Verifica se o valor é vazio
+        if (
+          value === null || // Verifica se é nulo
+          value === undefined || // Verifica se é indefinido
+          (typeof value === "string" && value.trim() === "") || // Verifica se é uma string vazia
+          (Array.isArray(value) && value.length === 0) // Verifica se é um array vazio
+        ) {
+          return false; // Retorna false se encontrar um valor vazio
+        }
+      }
+    }
+
+    return true; // Retorna true se nenhum valor vazio for encontrado
+  }
   function createNewProduct() {
-    console.log(productInputsData);
+    if (checkObjectNotEmpty(productInputsData) == false) {
+      toast.error("all fields must be filled in");
+    }
     axios
       .post(`${DATABASE_URL}/products`, {
         name: productInputsData.name,
@@ -102,9 +124,10 @@ function ProductForm({
     image: { type: "text", placeholder: "Image Url" },
     category: {
       type: "select",
-      options: categoriesData.map((item) => {
-        return { name: item.name, id: item.id };
-      }),
+      options: [
+        { name: "Select Category", id: "" },
+        ...categoriesData.map((item) => ({ name: item.name, id: item.id })),
+      ],
       placeholder: "Select Type",
     },
   };
@@ -134,7 +157,11 @@ function ProductForm({
           {isnewProduct ? (
             <button
               className="bg-primary px-2 py-1 text-white rounded-md shadow-md"
-              onClick={createNewProduct}
+              onClick={() => {
+                console.log(productInputsData);
+
+                createNewProduct();
+              }}
             >
               CREATE NEW PRODUCT
             </button>

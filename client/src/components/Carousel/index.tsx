@@ -132,7 +132,13 @@ function Carousel({
                       <IoIosCloseCircleOutline
                         className="absolute top-3 right-3"
                         onClick={() => {
-                          deleteItem(item.id);
+                          if (type == "categories" && item.Product.length > 0) {
+                            toast.error(
+                              "It is not possible to delete this item as it has associated products."
+                            );
+                          } else {
+                            deleteItem(item.id);
+                          }
                         }}
                       />
                     </div>

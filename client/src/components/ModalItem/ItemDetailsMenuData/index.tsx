@@ -42,7 +42,7 @@ export default function ItemDetailsMenuData() {
             </div>
 
             <h1
-              className={`text-2xl sm:text-3xl md:text-7xl overflow-y-scroll font-bold mb-2 text-center ${inter.className}`}
+              className={`text-2xl sm:text-2xl md:text-2xl  font-bold mb-2 text-center ${inter.className}`}
             >
               {infosModal.titleProduct}
             </h1>

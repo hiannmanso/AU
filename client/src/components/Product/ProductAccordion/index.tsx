@@ -28,7 +28,7 @@ function ProductAccordion({
   const [productInputsData, setProductInputsData] = useState<ProductInputs>({
     name: "",
     description: "",
-    category: "",
+    category: categoriesData[0] ? categoriesData[0].id : "",
     image: "",
     price: 0,
   });
