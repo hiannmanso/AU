@@ -6,7 +6,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   dotenv.config();
   app.enableCors({
-    origin: 'http://localhost:3001', // Substitua com a origem do seu cliente (por exemplo, frontend)
+    origin: [
+      'http://localhost:3001',
+      '186.205.200.75',
+      'https://au-menu-hiann.vercel.app',
+    ], // Substitua com a origem do seu cliente (por exemplo, frontend)
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Headers permitidos
     credentials: true, // Permitir credenciais (por exemplo, cookies)
