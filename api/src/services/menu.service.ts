@@ -73,7 +73,7 @@ export class MenuService {
     });
     const registerProductsOnMenu =
       await this.menuProductRepository.createMany(dataMenuProduct);
-    console.log(menuData, registerProductsOnMenu);
+
     return { menuData, registerProductsOnMenu };
   }
 

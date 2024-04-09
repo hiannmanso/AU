@@ -50,9 +50,4 @@ export class PutProductDto {
   @ValidateIf((o) => !!o.categoryId)
   @IsNotEmpty({ message: 'categoryId cannot be empty' })
   categoryId: string;
-
-  // @IsArray()
-  // @ValidateIf((o) => !!o.menuType)
-  // @IsNotEmpty({ message: 'menuIds cannot be empty' })
-  // menuIds?: string[];
 }

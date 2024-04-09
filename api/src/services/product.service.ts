@@ -44,18 +44,6 @@ export class ProductService {
       throwUnauthorizedException('This category does not exist.');
     }
 
-    // await Promise.all(
-    //   productData.menuIds.map(async (id) => {
-    //     const existingMenu = await this.menuRepository.findById(id);
-    //     console.log(existingMenu);
-    //     if (existingMenu === null) {
-    //       throwUnauthorizedException('This menu type does not exist.');
-    //     }
-    //   }),
-    // );
-    // const dataProductFromDB = { ...productData };
-    // delete dataProductFromDB.menuIds;
-
     const createProduct = await this.productRepository.create(productData);
     if (!createProduct) {
       throwUnauthorizedException(
